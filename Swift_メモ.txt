@@ -1,0 +1,896 @@
+Swift コードメモ
+
+修飾子に関して
+
+メソッドにも変数にも、アクセス制限はつけれる
+
+fileprivate
+同一ファイル内であればアクセスできる
+
+private
+メソッドならでないとアクセスできない（一番硬い）
+
+extension（クラス拡張のこと、デリゲートでよく使う）
+
+
+
+メソッドは
+
+
+structはプロパティを持ったプロパティ
+Constrains.ToolBar. addFolderButton みたいに使える
+struct Constrains {
+
+    /// ツーバーに表示する文字列
+    struct ToolBar {
+        static let addFolderButton = "addFolderButton".localized()
+        static let addTaskButton = "addTaskButton".localized()
+        static let deleteAllButton = "deleteAllButton".localized()
+    }
+
+
+テーブルビューの編集ボタンアクション
+private func setupToolBar(isEditing: Bool) {
+        editButton.title = isEditing ?
+            Constrains.ToolBar.deleteAllButton : Constrains.ToolBar.addFolderButton
+    }
+
+
+
+その値があるのかどうかを確認する方法
+guard let ~~~ {
+YESの場合の処理
+}
+
+pubic
+importなどで繋がっていれば参照できるアクセス権限
+
+プロトコル
+デリゲートの定義（先頭は大文字で）
+protocol Hogedele: class {
+    func failedThen()
+}
+
+デリゲートプロパティの用意
+weak var loadable: hogedele?
+
+デリゲートメソッドの呼び出し
+loadable?.failedThen()
+
+
+コメント
+// MARK: - LifeCycle Methods
+
+// MARK: - SetUp Methods
+
+// MARK: - Private Methods
+
+初期化　？
+？　＝　alloc initをしていること
+初期値があるときは、何かを定義する
+
+! ＝ ?(alloc init)状態から、初めて値が入った時につける
+初期値が入っている場合はつけない
+
+
+アクセス修飾子
+制限緩い
+open：モジュール外からもアクセスできる。 一番ゆるいアクセスコントロール。 新規追加✨
+public：モジュール外からもアクセスできる。 サブクラス化されない。 overrideできない。
+internal：モジュール内ならアクセスできる。 何も書かないとコレになる。（デフォルト）
+fileprivate：文字通りファイル内ならアクセスできる。 新規追加✨
+private：クラスなど宣言内でしかアクセスできない。
+制限厳しい
+
+
+letもvarも先頭小文字
+
+enum内の要素も小文字
+
+urlとdateの命名（URL型かString型かを命名ではっきりさせる）
+var thumbnailURL: URL
+var imageURLString: String
+var lastUpdateDate: Date
+var birthdayString: String
+
+
+if文の書き方　（）がいらない
+if names.isEmpty {
+    ...
+}
+
+コールバックやinitの時だけselfをつける（wselfなどは必要ない）
+
+
+モダンな書き方
+Array・dictionary
+var names = [String]()
+var jsonDic = [String: AnyObject]()
+
+早期リターンチェック
+guard hogehoge else {
+    return
+}
+
+
+
+アラートの表示（ヘルパー利用）
+func showAlert(message: String, handler: ((UIAlertAction) -> Void)? = nil) {
+        let alert = AlertHelper.alert(message: message, rightButtonAction: handler)
+        self.present(alert, animated: true, completion: nil)
+    }
+
+
+jsonファイルの取得（ローカル）
+
+戻る処理
+self.dismiss(animated: true, completion: nil)
+
+self.navigationController?.popViewController(animated: true)
+
+初回画面まで戻る
+self.navigationController?.popToRootViewController(animated: true)
+
+
+プリント
+print
+print("中身は\(url)")
+
+
+他のバージョンで使う場合のメモ
+ // TODO: デザイン確定後修正する
+
+あとで対応予定で残す場合
+// FIXME: testJSが不要になったら削除する
+
+シュミレーターのデータ保存先確認・保存場所
+ let documentDirPath = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)
+        print(documentDirPath)
+
+cache.dbを消す時
+URLCache.shared.removeAllCachedResponses()
+
+webviewで表示したもののアプリケーションキャッシュ・ブラウザキャッシュを消す
+WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
+                                                modifiedSince: Date(timeIntervalSince1970: 0)) {
+                                                    print("remove all cache.")
+        }
+
+
+base64 エンコード、デコード
+https://qiita.com/tenten0213/items/6ac8682e3a7e3b378167
+
+
+NetWorkcacheのみ消せた
+WKWebsiteDataTypeDiskCache
+
+/Library/Cookiesを消せた
+WKWebsiteDataTypeCookies
+
+どこが消えたかわからない
+WKWebsiteDataTypeSessionStorage
+
+以下のアプリケーションキャッシュを消せた
+/Library/Caches/com.stv.iQUICK/WebKit/OfflineWebApplicationCache
+WKWebsiteDataTypeOfflineWebApplicationCache
+
+NetWorkcacheとWKWebsiteDataTypeOfflineWebApplicationCacheの両方を消せるが、
+Web SQL.dbも消えてしまう
+ WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
+                                                modifiedSince: Date(timeIntervalSince1970: 0)) {
+        }
+
+
+リテラルコーディング（＋奥寺さん資料）
+ #if FOR_ADMIN
+            let text = "admin"
+        #elseif FOR_USER
+            let text = "user"
+        #else
+            let text = "dev"
+        #endif
+        print(text)
+
+
+アプリの設定ページを編集する
+https://qiita.com/akatsuki174/items/392cb3be619fabfa4608
+https://github.com/stv-ekushida/ios-licence-auto-make-demo
+https://qiita.com/mono0926/items/973752b69c881e00c507#_reference-cad5bf9a515fddc13848
+
+
+nilでないチェック
+openRequestURL != ""
+ではなく
+!openRequestURL.isEmpty
+
+Bool値の宣言
+Bool()ではなく初めからfalseを宣言（初期値がfalseのため）
+var notExistURL = false
+
+
+アプリを強制的に落とす
+fatalError("スキームが存在しない")
+
+
+swiftでFMDB
+https://qiita.com/s_emoto/items/5488667478c0339b4e83
+
+podでライブラリのエラーを無視する
+pod〜〜の上に
+inhibit_all_warnings!
+
+
+staticをつければ、どこからでも呼べる（クラスメソッド的なやつ）
+finalは呼ばなければ絶対にアクセスできないクラス
+
+// 配列の中の要素全体に対して、一つ一つをFolderモデル型に変換している（{}の中であれば$0を一つの要素として見れる）
+// 戻り値が必要ないときはmapではなく、forEachを使う
+objects.map { Folder(value: $0) }
+
+取り出したものを入れる変数は、Arrayかdic
+詳しい使い方は
+https://qiita.com/motokiee/items/cf83b22cb34921580a52
+
+for文
+for i in 0..<10 {
+    //処理
+}
+
+for文内での条件ずけ
+条件が複数の時は、fileterで絞ってしまう
+for validSite in validSiteList where validSite.path.isEmpty {}
+
+
+配列　Array
+中身の文字列を結合
+testArray.joined()
+
+
+// ピンチアクションの登録
+let pinchGesture = UIPinchGestureRecognizer(target: self, action: nil)
+self.view.addGestureRecognizer(pinchGesture)
+
+// wkwebviewへのピンチアクションの登録（デフォルトではNO）
+http://ioscake.com/wkwebview-equivalent-for-uiwebviews-scalespagetofit.html
+
+
+ピンチが可能なWKWebView作成
+ let jsString = "var meta = document.createElement('meta');" +
+            "meta.setAttribute('name', 'viewport');" +
+            "meta.setAttribute('content', 'width=device-width'); " +
+        "document.getElementsByTagName('head')[0].appendChild(meta);"
+        
+        let userScript = WKUserScript(source: jsString, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
+        
+        let wkUController = WKUserContentController()
+        wkUController.addUserScript(userScript)
+        
+        let wkWebConfig = WKWebViewConfiguration()
+        wkWebConfig.userContentController = wkUController
+        
+// ピンチがいらないときは上記は消す
+//        let webConfiguration = WKWebViewConfiguration()
+        webView = WKWebView(frame: .zero, configuration: wkWebConfig)
+        webView?.uiDelegate = self
+        webView?.navigationDelegate = self
+        webView?.allowsBackForwardNavigationGestures = true
+        
+        useragent(webview: webView)
+        
+        view = webView
+
+
+
+ユーザーデフォ
+userdefault
+
+保存
+UserDefaults.standard.set(jsonDataEncrypted, forKey: "settingFile")
+
+取得
+let jsonDataEncrypted = UserDefaults.standard.data(forKey: "settingFile"),
+
+
+string、url変換
+String(contentsOf: URL)
+URL(string: String)
+
+テーブルビューメソッド
+// MARK: - UITableViewDataSource Methods
+extension ModeListProvider: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return modeListData.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ModeListCell", for: indexPath)
+        
+        cell.textLabel?.text = modeListData[indexPath.row]["name"]
+        
+        return cell
+    }
+}
+
+// ローカルのJSONをストリングで出力
+ guard let path = Bundle.main.path(forResource: "btnu_custom_sample2", ofType: "json") else {
+                    fatalError("json is not found in main Bundle.")
+                }
+                
+                do {
+                     let jsonData = try Data(contentsOf: URL(fileURLWithPath: path))
+                    guard let jsonDataString = String(data: jsonData, encoding: .utf8) else {
+                        print("変換失敗")
+                        return
+                    }
+
+
+エラーして中断
+fatalError("TaskListViewController is nil.")
+
+
+オートレイアウト（コードで）
+    private func setConstraint(view: UIView) {
+        
+//        let statusBarHeight = UIApplication.shared.statusBarFrame.height
+        
+        view.translatesAutoresizingMaskIntoConstraints = true
+        
+        let width = NSLayoutConstraint(item: view,
+                                       attribute: .width,
+                                       relatedBy: .equal,
+                                       toItem: self.view,
+                                       attribute: .width,
+                                       multiplier: 1.0,
+                                       constant: 0)
+        
+        let height = NSLayoutConstraint(item: view,
+                                        attribute: .height,
+                                        relatedBy: .equal,
+                                        toItem: self.view,
+                                        attribute: .height,
+                                        multiplier: 1.0,
+                                        constant: 0)
+        
+        let xPosition = NSLayoutConstraint(item: view,
+                                           attribute: .centerX,
+                                           relatedBy: .equal,
+                                           toItem: self.view,
+                                           attribute: .centerX,
+                                           multiplier: 1.0,
+                                           constant: 0)
+        
+        let yPosition = NSLayoutConstraint(item: view,
+                                           attribute: .centerY,
+                                           relatedBy: .equal,
+                                           toItem: self.view,
+                                           attribute: .centerY,
+                                           multiplier: 1.0,
+                                           constant: 30)
+        
+        let constraints = [width, height, xPosition, yPosition]
+        
+        view.addConstraints(constraints)
+    }
+
+
+データ型　→ string
+guard let jsonString = String(data: jsonData, encoding: .utf8) else {
+                    return
+                }
+                
+
+
+オブジェクトマッパー
+objectmapper
+
+guard let jsonString = String(data: jsonData, encoding: .utf8) else {
+            jsonDataError(useCache: jsonClient.useCache)
+            return
+        }
+        
+let mapJsonString = Mapper<SettingFileResponse>().map(JSONString: jsonString)
+
+
+
+画面遷移
+1
+guard let webViewController = UIStoryboard(name: "WebView", bundle: nil)
+            .instantiateInitialViewController() as? WebViewController else {
+                return
+        }
+        
+        webViewController.selectConfigURL = requestConfigURL
+        
+        present(webViewController, animated: true, completion: nil)
+
+
+
+2
+ let infoVC = InfomationPageViewController.make(accessURL: AccessInfomation.teamOfService.rawValue)
+        self.navigationController?.pushViewController(infoVC, animated: true)
+
+
+// 遷移先に用意するもの
+ class func make(followerId: String?) -> FollowerPageViewController {
+        let vcName = FollowerPageViewController.className
+        guard let followerVC = UIStoryboard.viewController(
+            storyboardName: vcName, identifier: vcName) as? FollowerPageViewController else {
+                fatalError("FollowerPageViewController is nil.")
+        }
+        followerVC.followerId = followerId
+        return followerVC
+    }
+
+
+
+
+並列処理
+非同期処理
+// サブスレッドで実行
+DispatchQueue.global(qos: .default).async {
+  // サブスレッド(バックグラウンド)で実行する方を書く 
+    DispatchQueue.main.async {
+        // Main Threadで実行する
+    }
+}
+
+
+画面外タップでキーボードとじる
+@IBAction func tapBackground(_ sender: Any) {
+        self.view.endEditing(true)
+    }
+
+
+
+enterpreice
+
+
+コードでオートレイアウト
+view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[v0]|",
+                                                           options: NSLayoutFormatOptions(),
+                                                           metrics: nil,
+                                                           views: ["v0": webView ?? WKWebView()]))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-20-[v0]|",
+                                                           options: NSLayoutFormatOptions(),
+                                                           metrics: nil,
+                                                           views: ["v0": webView ?? WKWebView()]))
+
+
+テーブルビュー関連
+// テーブルビュー：セクションヘッダーの高さ変更
+    func tableView(_ tableView: UITableView,
+                   heightForHeaderInSection section: Int) -> CGFloat {
+        return modeListHeaderSize
+    }
+    // テーブルビュー：セルの高さ
+    func tableView(_ tableView: UITableView,
+                   heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 100
+    }
+    
+    // テーブルビュー：ヘッダーアレンジ
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        
+        let headerView = UIView(frame: CGRect(x: 0,
+                                              y: 0,
+                                              width: tableView.frame.width,
+                                              height: modeListHeaderSize))
+        
+        // 背景色
+        headerView.backgroundColor = UIColor.black
+
+        let titleLabel = UILabel()
+        titleLabel.frame = CGRect(x: 20,
+                                  y: 0,
+                                  width: headerView.frame.width,
+                                  height: headerView.frame.height)
+        
+        // 文字位置
+        titleLabel.textAlignment = .left
+
+        // 文字サイズ
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 25)
+
+        // 文字色
+        titleLabel.textColor = UIColor.white
+
+        // 表示される文字
+        titleLabel.text = "起動するアプリケーションを選択してください。"
+        
+        headerView.addSubview(titleLabel)
+        
+        return headerView
+}
+    
+    // テーブルビュー：タップ時の処理
+    func tableView(_ tableView: UITableView,
+                   didSelectRowAt indexPath: IndexPath) {
+        UserDefaults.standard.set(indexPath.row, forKey: "selectConfigURLNamber")
+        transionScreen(requestConfigURL: self.provider.modeDataList[indexPath.row])
+    }
+
+
+
+
+回してStringからURLにする
+
+guard let url = URL(string: "何かしらのURL") else {
+                            self.userProfileImage.image = #imageLiteral(resourceName: "setting_user_icon")
+                            return
+                        }
+                        self.userProfileImage.kf.setImage(with: url)
+
+
+画面サイズ
+let width = UIScreen.main.bounds.size.width
+let height = UIScreen.main.bounds.size.height
+
+
+コードでボタン作る
+
+private func createBackButton() {
+        
+        let screenWidth: CGFloat = self.view.frame.width
+        let screenHeight: CGFloat = self.view.frame.height
+        
+        let backButton = UIButton()
+        
+        backButton.frame = CGRect(x: screenWidth * 0.09, y: screenHeight * 0.03,
+                                  width: screenWidth * 0.1, height: 60)
+        
+        backButton.setTitle("back", for: UIControlState.normal)
+        
+        backButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 30)
+        
+        backButton.setTitleColor(UIColor.buttonTitleNomal, for: .normal)
+        backButton.setTitleColor(UIColor.buttonTitleHilight, for: .highlighted)
+        backButton.backgroundColor = UIColor.buttonBackGround
+        backButton.alpha = 0.9
+        
+        backButton.layer.masksToBounds = true
+        backButton.layer.cornerRadius = 10
+        backButton.layer.borderColor = UIColor.buttonBorder.cgColor
+        backButton.layer.borderWidth = 1.0
+        
+        backButton.addTarget(self,
+                             action: #selector(PDFWebViewController.buttonTapped(sender:)),
+                             for: .touchUpInside)
+        
+        self.pdfWebView?.addSubview(backButton)
+    }
+
+
+
+    
+    @objc func buttonTapped(sender: AnyObject) {
+        self.dismiss(animated: true, completion: nil)
+    }
+
+        
+繰り返し for
+for i in 0...14 {
+    // 処理
+}
+
+ログ、print 
+ // 列のセルのdeleteCheckFlgが全てtrueの場合、その列は映さない
+            print("--------------------------------------------------")
+            print(self.provider.cellItems.count)
+            print("--------------------------------------------------")
+
+
+textViewの文字数制限
+func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+
+    let currentText = textView.text ?? ""
+    guard let stringRange = Range(range, in: currentText) else { return false }
+    let changedText = currentText.replacingCharacters(in: stringRange, with: text)
+    return changedText.count <= 399 // Pass your character count here 
+}
+
+
+
+特定の文字列を指定して、そこから分割して配列にする
+ guard let separateString = webView.url?.absoluteString.components(separatedBy: "=") else {
+                print("Instagramのアクセストークンの取得に失敗")
+                return
+            }
+
+
+
+URLのエラーを拾う（WKWebView）
+
+func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation, withError error: Error) {
+        
+        handleError(error: error)
+    }
+
+func handleError(error: Error) {
+        if let failingUrl = error.userInfo["NSErrorFailingURLStringKey"] as? String {
+            
+            print("-----------------failingUrl-------------------------")
+           print(failingUrl)
+            print("------------------failingUrl------------------------")
+
+            setUrl(url: "https://qiita.com/peta-m175/items/102d6d723fd87e722f83")
+            
+            webView?.evaluateJavaScript("location.href=endLoading()", completionHandler: { (html, error) -> Void in
+            
+                print("実行完了")
+            })
+        }
+    }
+
+
+通知関連（notification）
+登録（基本コントローラーで登録して,deinitで削除）
+
+
+ let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self,
+                                       selector: #selector(removePartnerIDFromSharedInstance(notification:)),
+                                       name: .removePartnerIDFromSharedInstance,
+                                       object: nil)
+
+        setupPageViewController()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: .removePartnerIDFromSharedInstance, object: nil)
+    }
+
+
+notificationトリガー
+let notificationCenter = NotificationCenter.default
+        notificationCenter.post(.init(name: Notification.Name("removePartnerIDFromSharedInstance")))
+※ もしくわ
+    static let removePartnerIDFromSharedInstance = Notification.Name("removePartnerIDFromSharedInstance")をexetensionで定義していれば
+以下でいける
+.removePartnerIDFromSharedInstance
+
+
+
+通知（バックグラウンド処理）
+        let center = NotificationCenter.default
+
+//        center.addObserver(self,
+//                           selector: #selector(self.didEnterBackground(notification:)),
+//                           name: Notification.Name.UIApplicationDidEnterBackground,
+//                           object: nil)
+
+アクション	
+//    @objc private func didEnterBackground(notification: Notification) {
+//        print("didEnterBackground")
+//        // バックグラウンドに入った時
+//        self.schemeStart = false
+//    }
+
+クロージャの書き方（戻り値ない版）
+メソッド側（この中の処理が終わったら〜する）
+private func getProfileData(uuid: String, completionBlock: (() -> Void)? = nil) {}
+
+呼ぶ側
+getProfileData(uuid: uid, completionBlock: {
+                    self.selectLibraryView.fadeInAnimation(type: .slow, completed: nil)
+                })
+
+
+
+
+web view URL追跡
+//        // 表示中のWebページのURLを追跡
+    var observeLoading: NSKeyValueObservation?
+
+
+//                self.observeLoading = self.webView?.observe(\.url, options: [.new]) {_, change in
+//                    guard let changeResult = change.newValue.unsafelyUnwrapped else {
+//                        return
+//                    }
+//                    let urlString = changeResult.absoluteString
+//
+//                    // オンライン時
+//                    UserDefaults.standard.set(urlString, forKey: "currentOpenURL")
+//                }
+
+
+
+URLからパラメータを取り出す属性を追加（URL["keyで取り出す"]）
+
+
+定義と同時に値をセット
+@IBOutlet private weak var addUserButton: UIButton! {
+        didSet {
+            addLayer(view: addUserButton,
+                     corner: addUserButton.frame.width / 4.3,
+                     borderColor: .black,
+                     borderWidth: 0)
+        }
+    }
+
+
+ランダムの文字列を作成
+import UIKit
+ 
+extension String {
+    static func getRandomStringWithLength(length: Int) -> String {
+        
+        let alphabet = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        let upperBound = UInt32(alphabet.characters.count)
+        
+        return String((0..<length).map { _ -> Character in
+//            return alphabet[alphabet.startIndex.advancedBy(Int(arc4random_uniform(upperBound)))]
+            return alphabet[alphabet.index(alphabet.startIndex, offsetBy: Int(arc4random_uniform(upperBound)))]
+        })
+    }
+}
+
+
+
+navigationController 遷移カスタマイズ
+ private func customTranstlation(navigationController: UINavigationController?) {
+        let transition = CATransition()
+        transition.duration = 1
+        transition.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+        transition.type = kCATransitionFade
+        navigationController?.view.layer.add(transition, forKey: nil)
+    }
+
+
+セルクラスでレイアウトを足すタイミング
+override func draw(_ rect: CGRect) {
+        super.draw(rect)
+        setLayer()
+    }
+
+
+
+
+
+
+
+
+if let decodeData = Data(base64Encoded: base64String, options: .ignoreUnknownCharacters) {
+        yourWebView.load(decodeData, mimeType: "application/pdf", textEncodingName: "utf-8", baseURL: URL(fileURLWithPath: ""))
+} // since you don't have url, only encoded String
+
+
+
+
+dispatch main async
+非同期処理の中で、メインスレッドの動作を指定したいときは、この表記の中でやる
+
+
+didSetは、「そのプロパティに値が入った後に走るメソッド」
+
+
+collectionView,TableView のスクロールを最後までは、
+indexを指定して、そこまで移動にする（indexの数-1でわかる）
+
+
+時間を指定して止める
+DispatchQueue.main.asyncAfter(deadline: .now() + 秒数, execute: hanndolar)
+
+
+
+なんかのイベントがあって、（input）
+そのイベントでどうなるか？（output）（設計書）
+
+クラス一覧（DB設定もいる）
+クラス関連ず（矢印で処理順を書く）
+
+
+
+
+ブレイクポイント
+
+po url〜
+
+
+
+URLの拡張子を取得
+let path = NSString(string: "http://tecc0.com/index.html")
+ 
+print(path.lastPathComponent) // index.html
+print(path.pathExtension) // html
+
+
+URLの先頭文字列のチェック
+let hasHttp = requestURL.absoluteString.hasPrefix("http")
+
+
+webviewで履歴から指定のページに遷移する
+ let backPageCount = 2
+        guard let urlHistory = webView?.backForwardList.backList else {
+            print("閲覧履歴がありません。")
+            self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
+            return
+        }
+        setUrl(url: urlHistory[urlHistory.count - backPageCount].url.absoluteString)
+
+
+Userdefoのデータはアプリ内の「Preferences」に入っている
+キャッシュと同じ確認法
+
+
+info.plistはcopybundle resoruseに入れない
+合ったら、lintに怒られる
+
+error型の文字列
+error.localizedDescription
+
+
+
+stringファイル使用
+
+・stringクラスを拡張
+extension String {
+
+    func localized() -> String {
+        return NSLocalizedString(self, comment: "")
+    }
+}
+
+・stringファイル
+// MARK: - Alert Button
+"ALERT_OK" = "OK";
+
+// MARK: - Message
+"OFFLINE" = "通信環境の良い場所で再度お試しください。";
+"TIMEOUT" = "タイムアウトになりました。";
+"SESSION_IS_NIL" = "セッションが切れています。\n再度お試しください。";
+"FAILED_TO_GET_TIMELINE" = "タイムラインの取得に失敗しました。";
+
+
+・stringファイル作成後の呼び出し
+"指定したキー".localized()
+
+
+
+
+アラート　ヘルパー
+import UIKit
+
+final class AlertHelper {
+
+    static func buildAlert(title: String = "",  // 初めから入れておくパターン
+                           message: String,
+                           rightButtonTitle: String = "ALERT_OK".localized(), // stringファイルから引っ張るパターン
+                           leftButtonTitle: String? = nil, // 無いことにするパターン
+                           rightButtonAction: ((UIAlertAction) -> Void)?, // アクションをセット
+                           leftButtonAction: ((UIAlertAction) -> Void)? = nil) -> UIAlertController {
+
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let positiveAction = UIAlertAction(title: rightButtonTitle, style: .default, handler: rightButtonAction)
+        alert.addAction(positiveAction)
+
+        if let leftButtonTitle = leftButtonTitle {
+            let negativeAction = UIAlertAction(title: leftButtonTitle, style: .cancel, handler: leftButtonAction)
+            alert.addAction(negativeAction)
+        }
+        return alert
+    }
+}
+
+
+info.plistをターゲットからコピーで追加した時は、右メニューの参照先が絶対パスになっているので、相対パスになおす（reratibegroup）
+
+
+
+git操作
+# GitHubへアップロードしたいプロジェクトディレクトリへ移動
+$ cd /path/to/your/project
+$ git init
+
+# 必要であれば.gitignoreを作成し、バージョン管理しないファイルやディレクトリを記載（例：*.log）
+$ vim .gitignore
+
+# コミット 
+$ git add .
+$ git commit -m "Initial Commit"
+
+# 先ほど作成したGitHubリポジトリのURLをコピー&ペーストして、リモートブランチとして設定
+git remote add origin https://github.com/your-name/project-name.git
+
+# push
+git push -u origin master

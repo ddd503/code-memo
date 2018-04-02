@@ -1,0 +1,560 @@
+Objective-C コードメモ
+
+よく使う用メモ
+※クラスと定数は頭文字は大文字！！
+ストリングファイル
+// 多言語対応の場合
+[NSBundle.mainBundle localizedStringForKey:@"alertTitle" value:nil table:@"Localizable"]
+Localizable
+
+static NSString *const QuestionFileNameText = @"_Q_Sugoroku_LatterHalf";
+
+
+// 日本語対応のみの場合
+NSLocalizedString(@"memo", @"メモ");
+memoがキーの単語が存在しなければ、そのままmemoと出る
+memoがキーの単語が存在してれば、”メモ”でなくてもストリングファイルの方の単語が出る
+
+カスタムクラスの作り方
+cocoaタッチでcellクラスを作成
+nibファイルも一緒に作って、レイアウトを調整する
+メイン側でnibの登録を行ってカスタムのh.にパーツを接続
+
+nib登録（Cell）
+メインの方でnibをインスタンス化して定義、カスタムクラスとコレクションビューを紐づける
+UINib *nib = [UINib nibWithNibName:@"CustomCollectionViewCell" bundle:nil];
+    [self.collectionView registerNib:nib forCellWithReuseIdentifier:@"Cell"];
+
+
+nib登録（Header）
+ UINib *headerNibFile = [UINib nibWithNibName:@"CustomCollectionReusableView" bundle:nil];
+    [self.collectionView registerNib:headerNibFile forSupplementaryViewOfKind:UICollectionElementKindSectionHeader      withReuseIdentifier:@"Header"];
+
+
+
+テーブルビューの場合
+Cell　＝　初回nib生成時のforCellReuseIdentifier、セル作成時のリユースID、カスタムセル側のIdentifier
+セル内容メソッドで、nib内のパーツが使えるので、文字や画像を指定する
+UINib *nib = [UINib nibWithNibName:@"CustomTableViewCell" bundle:nil];
+[self.tableView registerNib:nib forCellReuseIdentifier:@"Cell"];
+
+
+typedef NS_ENUM(NSUInteger, travelPotion) {
+    AsiaPotion = 0,
+    AmerikaPotion,
+    EuropePotion,
+    OceaniaPotion,
+AfurikaPotion
+};
+
+
+（並列処理で他のメソッドも走らせることが非同期）
+セルの作成に間に合わなくても、データが後付けで用意されていれば、リロードのたびにindexPath.rowで順に入れるから
+リロードのたびの更新に間に合ったタイミングで表示される
+並列処理で走らせておけば、間に合ったタイミングで表示できる
+
+
+デバイストークンの作成までは行った
+デバイストークン0e28998aeb88795a51ba8ca05bb3bcb9937bf993c7b883774ae5d72be4abbd9b
+可能性ある
+http://d.hatena.ne.jp/MonteCut/20120827/1346079444
+https://www.lancork.net/2013/08/how-to-ios-push-first/
+http://blog.hrendoh.com/implement-apple-push-notification-service-on-ios-application/#Push
+http://qiita.com/eKushida/items/634ad3726868c8f5e61d
+
+
+イニシャライザの種類
+[[クラス名 alloc] init]
+[インスタンス メソッド]　でメソッドにインスタンスを渡せる
+for文、クラス内だけ、回数を指定しないfor in でかける（メリットは処理が早い？？）
+for(クラス *定数 in 配列（一つずつ定数に入れていく）){
+            [定数 送り先メソッド];
+
+
+
+
+セルのモデルに値をセットするときに使うとオートレイアウトが死ぬ！！！！
+指定イニシャライザは初期値を明確に与えるためのメソッド
+
+Modelクラスでの、複数の文字列から配列にしてControllerに返す例
+// 指定イニシャライザを定義し、社員情報の引数を指定
+- (instancetype)initWithName:(NSString*)name initAge:(NSNumber*)age initSex:(NSString*)sex initGoodLanguage:(NSString*)goodlanguage {
+    self = [super init];
+    if (self) {
+        self.employeeName = name;
+        self.employeeAge = age;
+        self.employeeSex = sex;
+        self.employeeGoodLanguage = goodlanguage;
+    }
+    return self;
+}
+
+// 指定イニシャライザを経由して初期化
+- (instancetype)init
+{
+    self = [super init];
+    return [self initName:self.employeeName initAge:self.employeeAge initSex:self.employeeSex initGoodLanguage:self.employeeGoodLanguage];
+}
+
+/Applications/MAMP/htdocs/training
+
+
+plistから値を受け取る
+// セル内のデータを用意
+    //プロジェクト内のファイルにアクセスできるオブジェクトを宣言
+    NSBundle *bundle = NSBundle.mainBundle;
+    //読み込むプロパティリストのファイルパスを指定
+    NSString *path = [bundle pathForResource:@"Property List" ofType:@"plist"];
+    //プロパティリストの中身データを取得
+    NSDictionary *dic = [NSDictionary dictionaryWithContentsOfFile:path];
+    // キー値を元に各自データリストを取得
+    self.cellImageList = dic[@"travelImageName"];
+    self.cellTextList = dic[@"travelExplainText"];
+
+
+ifconfig | grep 192
+
+アニメーション
+
+self.countLabel.frame : {{88, 334}, {100, 100}}
+
+
+[UIView animateWithDuration:0.1f delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
+        
+    } completion:^(BOOL finished) {
+       
+    }];
+
+
+
+テーブルビューの必須メソッド
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return 0;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@“Cell” forIndexPath:indexPath];
+
+    cell.textLabel.text = @"セルテキスト";
+    return cell;
+}
+
+テーブルビュー　セルの高さ
+	- (CGFloat)tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return CellHeight;
+}
+
+テーブルビュー　編集ボタンつける
+    self.navigationItem.rightBarButtonItem = self.editButtonItem;
+
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated {
+    [super setEditing:editing animated:animated];
+    self.fileListTable.editing = editing;
+
+}
+
+テーブルビュー　画面戻り時　アニメーション　選択解除
+[self.fileListTable deselectRowAtIndexPath:self.fileListTable.indexPathForSelectedRow animated:YES];
+
+
+テーブルビュー　セルの削除　デリート時の処理
+- (void)tableView:(UITableView *)tableView
+commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
+forRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        // 該当のセルを消す
+        
+        // 更新をかける
+    }
+    
+}
+
+テーブルビューのセル削除のアニメーションリロード
+// テーブルビューを更新（非表示更新の際にアニメーションをつける(いらない場合はreloadDataでも可)）
+        [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+
+最終的なコメント
+https://qiita.com/Nick_paper/items/9b70fd940fca056ed9c7
+
+コメントの部分わけ
+objective-c：
+#pragma mark - LifeCycle Methods
+
+swift：
+MARK:
+
+/**
+ 	
+ */
+
+
+
+初回起動確認
+
+static NSString *const CheckFirstTimeRunKey = @"firstRun";
+
+ // 初回起動かを確認
+    if ([self CheckRunfirstTime]) {
+        // 初回起動時に行う処理
+    }
+// 初回起動を確認するメソッド
+- (BOOL)CheckRunfirstTime {
+    NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
+    // 起動確認用の値が設定されていれば、NOを返し、されていなければ、起動証明として値を設定
+    if ([userDefaults objectForKey:CheckFirstTimeRunKey]) {
+        return NO;
+    }
+    [userDefaults setBool:YES forKey:CheckFirstTimeRunKey];
+    [userDefaults synchronize];
+    return YES;
+}
+
+
+①selfについて
+クラス内のプロパティのアクセスは、ローカル変数や引数より優先されます。
+プロパティとローカル変数など同じ名前を使いたいときに、区別するために、使って下さい。
+
+②コメントについて
+行ごとラインコメントは不要です。
+可読性を著しく損ないます。
+何をしているかは、コードを見たら分かります。
+書くとしたら、なぜそうしたかを書いてください。
+
+関数のコメントは、apple docで調べて下さい。
+
+
+自分クラスをインスタンス化
+ __weak typeof(self) wself = self;
+
+
+
+// セルタップ時
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+}
+
+初回ロードメソッド
+if ([self CheckRunfirstTime]) {
+        // 初回起動時に行う処理（最初の行をセット）
+        //[self.connectingRealm createDatabase:@"0" folderName:@"" folderDataCounter:0];
+    }
+
+- (BOOL)CheckRunfirstTime {
+    NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
+    if ([userDefaults objectForKey:CheckFirstTimeRunKey]) {
+        return NO;
+    }
+    [userDefaults setBool:YES forKey:CheckFirstTimeRunKey];
+    [userDefaults synchronize];
+    return YES;
+}
+
+画面遷移
+// 遷移先のストーリーボードをインスタンス化
+    UIStoryboard *secondStoryBoard = [UIStoryboard storyboardWithName:@"SecondViewController" bundle:nil];
+    // 遷移先のViewControllerをインスタンス化
+    SecondViewController *secondViewController = [secondStoryBoard instantiateInitialViewController];
+    // 遷移を実行
+    [self.navigationController pushViewController:secondViewController animated:YES];
+
+
+
+乱数の生成(10の中なかからランダムで)
+int randomCount = arc4random_uniform((int)10);
+
+for文
+// for構文
+
+for (NSString *shop in 配列) {
+   NSLog(@"%@", shop); // "Shop 99", "DAISO"の順で表示される
+}
+
+// for例文
+// 例：iを0から99まで100ループさせる
+for(int i=0; i<100; i++){
+  // 処理
+}
+
+データベース保存場所
+NSString *homeDirectory = NSHomeDirectory();
+NSLog(@"%@", homeDirectory);
+
+
+日付データをストリングに変換
+NSDate *nowdate = [NSDate date];
+NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+[formatter setDateFormat:@"yyyy/MM/dd HH:mm:ss"];
+NSString *datamoji = [formatter stringFromDate:nowdate];
+
+
+
+
+テーブルセル可変設定
+static CGFloat const EstimatedRowHeight = 80;
+
+self.tableView.rowHeight = UITableViewAutomaticDimension;
+self.tableView.estimatedRowHeight = EstimatedRowHeight;
+
+
+タイマー
+プロパティ
+@property (nonatomic, strong) NSTimer *timer;
+
+作成メソッド
+self.timer =
+    [NSTimer
+     scheduledTimerWithTimeInterval:0.03f
+     target:self
+     selector:@selector(timerAction:)
+     userInfo:nil
+     repeats:YES];
+
+実行メソッド
+- (void)timerAction:(NSTimer*)timer {
+    
+}
+
+ボタンタイトル
+[btn setTitle:@"押してね" forState:UIControlStateNormal];
+[btn setTitle:@"ぽち" forState:UIControlStateHighlighted];
+[btn setTitle:@"押せません" forState:UIControlStateDisabled];
+// ボタンがタッチダウンされた時にhogeメソッドを呼び出す
+
+
+画面サイズ
+[UIScreen mainScreen].bounds.size.height;
+[UIScreen mainScreen].bounds.size.width;
+
+block構文の書き方（これ終わったら〜する的）
+// 定義
+- (void)registerHoge:(NSString *)hoge
+           completion:(void(^)(NSDictionary *result))successBlock;
+
+// 呼び出し
+[boke registerHoge:hoge
+         completion:^(NSDictionary *result) {
+             // 処理
+         }
+];
+
+
+自作デリゲート
+// Delegateメソッドを定義
+@protocol HogeDelegate <NSObject>
+// ここに@optional/requiredを指定することもできる
+- (void)finishedDownload:(NSDictionary *)result;
+@end
+// delegateプロパティを定義
+@property (nonatomic, weak) id<HogeDelegate> delegate;
+
+
+デリゲートの呼び出し
+ __weak typeof(self) wself = self;
+        if ([wself.delegate respondsToSelector:@selector(becameBingo)]) {
+            [wself.delegate becameBingo];
+        }
+
+@interface Boke:UIViewController<HogeDelegate>
+...
+Hoge *hoge = [[hoge alloc] init];
+hoge.delegate = self;
+
+- (void)finishedDownload:(NSDictionary *)result {
+    // 処理
+}
+
+
+ハンドラー内でのselfの属性
+__strong typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+
+// アラート内のボタンを非活性にする
+(アラートアクションのテキストフィールド内に下記)
+
+        [textField addTarget:self action:@selector(alertTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+
+(アラートアクション作成後)
+saveButton.enabled = NO;
+
+
+(メソッドで非活性条件のメソッドを用意)
+- (void)alertTextFieldDidChange:(UITextField *)sender {
+    // 表示されているアラートコントローラーをインスタンス化
+    UIAlertController *alertController = (UIAlertController *)self.presentedViewController;
+    if (alertController) {
+        UITextField *alertTextField = alertController.textFields.firstObject;
+        UIAlertAction *saveAction = alertController.actions.lastObject;
+        saveAction.enabled = (alertTextField.text.length == 0) ? NO : YES;
+    }
+}
+
+テキスト入力制限（30文字）
+-(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
+    NSString *newString = [textField.text stringByReplacingCharactersInRange:range withString:string];
+    return !(newString.length>30);
+}
+テキストフィールドの「何も入っていない時リターン押せない」はstoryboardの設定で一発（Auto enable ReturnKey）
+
+URLから画像に変換
+- (UIImage *)changeFormatImageData:(NSString *)imageUrl {
+    NSURL *url = [NSURL URLWithString:imageUrl];
+    NSData * data = [NSData dataWithContentsOfURL:url];
+    UIImage *image = [UIImage imageWithData:data];
+    
+    return image;
+}
+
+
+
+並列処理
+dispatch_queue_t mainQueue = dispatch_get_main_queue();
+                               dispatch_queue_t subQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+
+dispatch_async(subQueue, ^{
+   
+                dispatch_async(mainQueue, ^{
+                    // 終わった後の処理
+                    
+                });
+            }
+        );
+
+
+//    NSURL *tmpURL = [NSURL fileURLWithPath:NSTemporaryDirectory()];
+//    NSURL *fileURL = [tmpURL URLByAppendingPathComponent:@"sample.txt"];
+//
+//    NSData *data = [inputText dataUsingEncoding:NSUTF8StringEncoding];
+//
+//    [inputText writeToURL:fileURL atomically:YES encoding:NSUTF8StringEncoding error:nil];
+
+
+
+dropbox ログアウト
+
+    //[DBClientsManager unlinkAndResetClients];
+
+
+switch文
+switch (n) {
+    case 1:
+        NSLog(@"n is 1");
+        break; //ここのbreakをはずした場合の動作
+    case 2:
+        NSLog(@"n is 2");
+        break;
+    default:
+        NSLog(@"default");
+        break;
+}
+
+
+配列作って通知センターに投げている
+
+ NSDictionary *statusText = @{@"statusText":
+                                 [NSString stringWithFormat:@"Signed in user: %@",
+                                  fullName]};
+  [[NSNotificationCenter defaultCenter]
+   postNotificationName:@"ToggleAuthUINotification"
+   object:nil
+   userInfo:statusText];
+
+
+bool値のnslog
+NSLog(@"exists: %@",([manager fileExistsAtPath:path] ? @"YES":@"NO"));
+
+
+
+エンコードしてNSDataを作る
+
+NSData *fileData = [@“” dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:NO];
+
+NSDataからNSString
+NSString *str= [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+
+配列 を　連結　繋げる
+http://obc-fight.blogspot.jp/2013/02/NSArray-NSMutableArray-Adding-Objects-by-Array.html
+
+スクロールの一番下検知、取得
+http://nadegiri.main.jp/?p=295
+
+URLからPath取得
+http://d.hatena.ne.jp/watanata2000/20120313/1331605820
+
+
+
+非同期で画像取得
+#import <SDWebImage/UIImageView+WebCache.h>
+
+NSURL *imageURL = [NSURL URLWithString:self.restaurantData[indexPath.row].image_url.shop_image1];
+[cell.shopImage sd_setImageWithURL:imageURL placeholderImage:[UIImage imageNamed:@"noimage"]];
+
+
+
+ライブラリのワーニングを無視
+pod 'Facebook-iOS-SDK', :inhibit_warnings => true
+
+
+画面外タップでキーボードを閉じる
+// テキストフィールド以外のタップでキーボードを閉じる
+- (IBAction)tapBackground:(id)sender {
+    [self.view endEditing:YES];
+}
+
+barボタンの追加
+UIBarButtonItem *rightBarButton = [UIBarButtonItem new];
+rightBarButton.title = @"追加";
+rightBarButton.style = UIBarButtonItemStylePlain;
+rightBarButton.target = self;
+rightBarButton.action = @selector(callUploadApi);
+self.navigationItem.rightBarButtonItem = rightBarButton;
+
+
+配列の検索を途中で止める
+https://qiita.com/exilias/items/f8ebd0dfed493bb0e25a
+
+NSlogのフォーマット　サンプル
+http://blog.goo.ne.jp/kunibu/e/7ecd5839ebec7187ee02716629ceaa39
+
+Viewをタグでインスタンス化
+UIView *pointView = [self.view viewWithTag:1];
+
+subViewのセンターの座標を設定
+http://lepetit-prince.net/ios/?p=152
+
+
+
+タップ
+タッチしたViewを取得
+// タッチイベントを取る
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    UITouch *touch = [touches anyObject];
+    NSLog(@"%ld", touch.view.tag);
+//    switch (touch.view.tag) {
+//        case 1:
+//            // タグが1のビュー
+//            NSLog(@"ImageViewに触った");
+//            break;
+//        default:
+//            // それ以外
+//            NSLog(@"Viewに触った");
+//            break;
+//    }
+}
+
+アラートを出す
+ [self presentViewController:nextActionAlert animated:YES completion:nil];
+
+
+
+nil/null
+nullだと落ちる
+nilだと落ちない
+NSObject
+クラス（拡張は.pctファイルに）
+
+
+
