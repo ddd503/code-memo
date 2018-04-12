@@ -894,3 +894,95 @@ git remote add origin https://github.com/your-name/project-name.git
 
 # push
 git push -u origin master
+
+
+
+
+
+
+通知（WillEnterForeground）
+private func registeNotification() {
+        let center = NotificationCenter.default
+        center.addObserver(self,
+                           selector: #selector(self.willEnterForeground(notification:)),
+                           name: Notification.Name.UIApplicationWillEnterForeground,
+                           object: nil)
+    }
+    
+    @objc private func willEnterForeground(notification: Notification) {
+       // アクション
+    }
+
+// 通知削除
+    private func removeNotification() {
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.removeObserver(self)
+    }
+
+暗号化データ→データの復号化（base64）
+let newData = Data(base64Encoded: 暗号化データ(Data))
+
+// アプリの状態を取得（バックグラウンドなど）
+UIApplication.shared.applicationState
+
+
+コードでWKwebViewのautolayout
+ private func constainWebView(webView: WKWebView?) {
+        webView?.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[v0]|",
+                                                           options: NSLayoutFormatOptions(),
+                                                           metrics: nil,
+                                                           views: ["v0": webView ?? WKWebView()]))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-20-[v0]|",
+                                                           options: NSLayoutFormatOptions(),
+                                                           metrics: nil,
+                                                           views: ["v0": webView ?? WKWebView()]))
+    }
+
+jSの埋め込み
+private func setJSAction() -> WKWebViewConfiguration {
+        let jsString = "何かのスクリプト"
+        
+        let userScript = WKUserScript(source: jsString, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
+        
+        let wkUController = WKUserContentController()
+        wkUController.addUserScript(userScript)
+        
+        let wkWebConfig = WKWebViewConfiguration()
+        wkWebConfig.userContentController = wkUController
+        
+        return wkWebConfig
+    }
+
+呼び出すとステータスバーを作る（クラスごとに呼ぶ）
+extension UIViewController {
+    func setStatusBarBackgroundColor() {
+        let statusBarBackground = UIView(frame: CGRect(x: 0,
+                                                       y: 0,
+                                                       width: self.view.bounds.width,
+                                                       height: UIApplication.shared.statusBarFrame.height))
+        statusBarBackground.backgroundColor = UIColor.black
+        
+        self.view.addSubview(statusBarBackground)
+    }
+}
+
+
+パラメータをkeyで取り出せる
+static func parameterDic(parameter: String) -> [String: String] {
+        
+        var parameters = [String: String]()
+        let pairs = parameter.components(separatedBy: "&")
+        
+        for pair in pairs {
+            let elements = pair.components(separatedBy: "=")
+            let key = elements[0].removingPercentEncoding
+            let value = elements[1].removingPercentEncoding
+            
+            if let key = key, let value = value {
+                parameters[key] = value
+            }
+        }
+        return parameters
+    }
