@@ -121,8 +121,6 @@ func showAlert(message: String, handler: ((UIAlertAction) -> Void)? = nil) {
     }
 
 
-jsonファイルの取得（ローカル）
-
 戻る処理
 self.dismiss(animated: true, completion: nil)
 
@@ -312,7 +310,24 @@ extension ModeListProvider: UITableViewDataSource {
     }
 }
 
+
+セルクラスメソッド(cell)
+自身のidentifierを返す
+static var identifier: String {
+        return String(describing: self)
+    }
+
+
+/// NSDataのフォーマットを変更
+    private func dateFormat(date: NSDate) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy/MM/dd HH:mm"
+        return dateFormatter.string(from: date as Date)
+    }
+    
+
 // ローカルのJSONをストリングで出力
+※ pathの作成でnilになる場合は、「let testBundle = Bundle(for: type(of: self))」を試す
  guard let path = Bundle.main.path(forResource: "btnu_custom_sample2", ofType: "json") else {
                     fatalError("json is not found in main Bundle.")
                 }
@@ -986,3 +1001,7 @@ static func parameterDic(parameter: String) -> [String: String] {
         }
         return parameters
     }
+
+
+テストコードの比較式
+https://qiita.com/shirochan/items/10271912289dc563cc36
