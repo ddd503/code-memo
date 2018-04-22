@@ -557,4 +557,77 @@ NSObject
 クラス（拡張は.pctファイルに）
 
 
+型変換　キャスト　変換
+
+
+・NSInteger → NSString
+
+NSInteger num = 10;
+NSString *str = [NSString stringWithFormat:@"%d", num];
+
+
+・NSString → NSInteger
+
+NSString *str = @"1500";
+NSInteger num = [str intValue];
+
+
+・NSDate → NSString
+
+NSDateFormatter * fmt = [NSDateFormatter new];
+fmt.dateFormat = @"yyyy-MM-dd 'at' HH:mm";
+NSDate *date = [NSDate date];
+NSString *str = [fmt stringFromDate:date];
+
+
+・NSString → NSDate
+
+NSDateFormatter *fmt = [NSDateFormatter new];
+[fmt setDateFormat:@"yyyy/MM/dd HH:mm:ss"];
+NSString *str = @"2000/01/02 03:04:05";
+NSDate *date = [fmt dateFromString:str];
+
+
+・NSData → NSString
+
+NSData *data = // なんらかのデータを代入
+NSString *str= [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+
+
+・NSString → NSData
+
+NSString *str = @"hoge";
+NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
+
+
+・NSNumber → NSString
+
+[@10 stringValue];
+
+
+・NSStirng → NSNumber
+
+[@"hoge" intValue];
+
+
+
+
+git操作
+# GitHubへアップロードしたいプロジェクトディレクトリへ移動
+$ cd /path/to/your/project
+$ git init
+
+# 必要であれば.gitignoreを作成し、バージョン管理しないファイルやディレクトリを記載（例：*.log）
+$ vim .gitignore
+
+# コミット 
+$ git add .
+$ git commit -m "Initial Commit"
+
+# 先ほど作成したGitHubリポジトリのURLをコピー&ペーストして、リモートブランチとして設定
+git remote add origin https://github.com/your-name/project-name.git
+
+# push
+git push -u origin master
+
 
