@@ -862,6 +862,52 @@ extension String {
 
 
 
+キーボードの上にボタン追加
+ //キーボード上部に「完了」ボタンを追加（キーボード設定によりreturnキーがなくなっているため）
+    private func addKey() {
+        
+        //デフォルトカラーを作成（ボタンの文字色用）
+        let default_color1 = #colorLiteral(red: 0.07450980392, green: 0.5647058824, blue: 1, alpha: 1)
+        let default_color2 = #colorLiteral(red: 0.07450980392, green: 0.5647058824, blue: 1, alpha: 0.3)
+        
+        // デバイスごとのスクリーン幅と高さを取得
+        let screen_width = UIScreen.main.bounds.width
+        let screen_height = UIScreen.main.bounds.height
+        // ボタンを追加するためのViewを生成
+        let onKeyboard = UIView(frame: CGRect(x: 0,
+                                              y: 0,
+                                              width: screen_width,
+                                              height: screen_height / 14))
+        // viewの色を指定
+        onKeyboard.backgroundColor = UIColor.white
+        
+        // 完了ボタンの生成
+        let btn = UIButton(frame: CGRect(x: screen_width-screen_width / 4,
+                                         y: 0,
+                                         width: screen_width / 4,
+                                         height: screen_height / 14))
+        //ボタンの背景を設定
+        btn.backgroundColor = UIColor.white
+        //ボタンのtitleを設定
+        btn.setTitle("完了", for: .normal)
+        //ボタンのフォントを設定
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: UIFont.main_text)
+        //titleを中央寄せ
+        btn.contentHorizontalAlignment = .center
+        //押したときの色と押してない時の色を設定
+        btn.setTitleColor(default_color1, for: .normal)
+        btn.setTitleColor(default_color2, for: .highlighted)
+        //ボタンをおした時の実行メソッドを設定
+        btn.addTarget(self,
+                      action: #selector(MainViewController.close_keyboard),
+                      for: .touchUpInside)
+        // viewへ完了ボタンを追加
+        onKeyboard.addSubview(btn)
+        //テキストフィールドにキーボード用のviewを追加
+        totalfee_text.inputAccessoryView = onKeyboard
+        people_text.inputAccessoryView = onKeyboard
+    }
+
 
 アラート　ヘルパー
 import UIKit
