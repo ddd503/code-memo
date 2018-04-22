@@ -625,7 +625,7 @@ $ git add .
 $ git commit -m "Initial Commit"
 
 # 先ほど作成したGitHubリポジトリのURLをコピー&ペーストして、リモートブランチとして設定
-git remote add origin https://github.com/your-name/project-name.git
+git remote add origin "URL"
 
 # push
 git push -u origin master
