@@ -87,6 +87,8 @@ letもvarも先頭小文字
 
 enum内の要素も小文字
 
+
+
 urlとdateの命名（URL型かString型かを命名ではっきりさせる）
 var thumbnailURL: URL
 var imageURLString: String
@@ -1051,3 +1053,35 @@ static func parameterDic(parameter: String) -> [String: String] {
 
 テストコードの比較式
 https://qiita.com/shirochan/items/10271912289dc563cc36
+
+
+ページ間の値受け渡し
+// 受け取る側に以下を設定
+// MARK: - Factory
+    class func make(url: String) -> DetailViewController {
+        let storyboard = UIStoryboard(name: DetailViewController.identifer, bundle: nil)
+        guard let detailViewControllerVC = storyboard.instantiateViewController(withIdentifier: DetailViewController.identifer) as? DetailViewController else {
+            fatalError("VCのインスタンス化に失敗")
+        }
+        detailViewControllerVC.accessURL = url
+        return detailViewControllerVC
+    }
+
+
+// 遷移側
+let detailVC = DetailViewController.make(url: provider.accessList[indexPath.row].url)
+self.navigationController?.pushViewController(detailVC, animated: true)
+
+
+バージョンごと
+if #available(iOS 10.0, *) {
+                // iOS10以降の場合
+            } else {
+                // iOS9以前の場合
+            }
+
+
+メインスレッドで実行（非同期中にかく）
+DispatchQueue.main.async {
+        // Main Threadで実行することをかく
+    }
