@@ -979,6 +979,8 @@ git checkout BN
 上記２つを一度に行う
 git checkout -b BN
 
+Git強制チェックアウト
+git checkout --force <ブランチ名>
 
 現在の作業ブランチに指定ブランチをマージする
 git merge BN
