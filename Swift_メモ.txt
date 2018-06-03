@@ -1127,3 +1127,8 @@ DispatchQueue.main.async {
         // Main Threadで実行することをかく
     }
 
+
+クロージャー
+ハンドラー
+completion: (()-> Void)?
+
