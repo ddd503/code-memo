@@ -1,5 +1,24 @@
 Swift コードメモ
 
+Codableの使い方
+
+// 単一
+ do {
+      let decoder = JSONDecoder()
+      let response = try decoder.decode(codableモデルクラス.self, from: jsonData)
+    } catch let error {
+      print("error: \(error.localizedDescription)")
+    }
+
+// 配列
+do {
+     let decoder = JSONDecoder()
+     let tweetData = try decoder.decode([codableモデルクラス配列用].self, from: jsonData)
+    } catch let error {
+      print("error: \(error.localizedDescription)")
+    }
+
+
 修飾子に関して
 
 メソッドにも変数にも、アクセス制限はつけれる
@@ -36,6 +55,14 @@ private func setupToolBar(isEditing: Bool) {
     }
 
 
+テーブルビューの選択状態を戻す
+override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if let indexPathForSelectedRow = tableView.indexPathForSelectedRow {
+            tableView.deselectRow(at: indexPathForSelectedRow, animated: true)
+        }
+    }
 
 その値があるのかどうかを確認する方法
 guard let ~~~ {
@@ -1131,4 +1158,39 @@ DispatchQueue.main.async {
 クロージャー
 ハンドラー
 completion: (()-> Void)?
+
+
+日付
+Date変換
+
+//MARK: - Helper
+    /// 文字列⇒日付変換
+    ///
+    /// - Parameter dateString: 日付（文字列）
+    /// - Returns: 日付
+    private func stringToDate(dateString: String) -> Date {
+        let dateFormater = DateFormatter()
+        dateFormater.locale = Locale(identifier: "ja_JP")
+        dateFormater.dateFormat = "yyyy/MM/dd HH:mm:ss"
+        return dateFormater.date(from: dateString) ?? Date()
+    }
+    
+    /// 日付⇒文字列変換
+    ///
+    /// - Parameter date: 日付
+    /// - Returns: 日付（文字列）
+    private func dateToString(date: Date) -> String {
+        let dateFormater = DateFormatter()
+        dateFormater.locale = Locale(identifier: "ja_JP")
+        dateFormater.dateFormat = "yyyy/MM/dd HH:mm:ss"
+        return dateFormater.string(from: Date())
+    }
+
+
+// Error側をNSErrorも使えるように拡張
+extension Error {
+    fileprivate var nsError: NSError {
+        return (self as NSError)
+    }
+}
 
