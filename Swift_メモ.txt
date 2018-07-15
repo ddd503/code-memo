@@ -1,5 +1,39 @@
 Swift コードメモ
 
+
+// stringでメソッド名を指定して呼び出す（呼び出しは@objcをつける）
+self.perform(Selector("メソッド名"))
+// 呼び出しメソッド
+@objc private func transitTeamAViewController() {
+        //TODO  : チームA
+    }
+
+アクセス修飾子
+
+getterもsetterも公開するプロパティ
+public var option: Option
+
+getterのみ公開するプロパティ（取得はできるが、変更はできない）
+public private(set) var view: CustomView
+
+
+// ループ処理を抜けるためのラベルをforEachの場合も使えるようにする
+extension Array {
+    func forEachWithBreak(operation: (Element, () -> ()) -> ()){
+        var loop = true
+        func fail(){
+            loop = false
+        }
+        label: for item in self {
+            operation(item, fail)
+            if loop == false {
+                break label
+            }
+        }
+    }
+}
+
+
 Codableの使い方
 
 // 単一
@@ -46,6 +80,9 @@ struct Constrains {
         static let addTaskButton = "addTaskButton".localized()
         static let deleteAllButton = "deleteAllButton".localized()
     }
+
+テーブルビュー　セルがない部分のセパレート線を消す
+self.tableView.tableFooterView = UIView()
 
 
 テーブルビューの編集ボタンアクション
@@ -1194,3 +1231,25 @@ extension Error {
     }
 }
 
+ストリングファイルの使用
+まずstringを拡張
+クラス名：String+Localized
+
+import Foundation
+
+extension String {
+
+    func localized() -> String {
+        return NSLocalizedString(self, comment: "")
+    }
+}
+
+使用法
+呼び出す場所で
+"stringfileでのkey".localized()
+
+stringファイル内
+"offlineAlertTitle" = "警告";
+
+変数の型の種別を知る
+targetView.isKind(of: 任意の型.self)
