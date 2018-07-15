@@ -1,0 +1,137 @@
+git resetでgit commitを取り消す（記録が残らない）
+
+1.git logを確認
+$ git log --oneline
+
+2. 2つ前のcommitを取り消し（例えば）
+$ git reset --soft HEAD~2
+2. 特定のコミットまでを全て消す
+$ git reset --soft 8189e9c(コミット番号)
+
+
+
+git revertでgit commitを取り消す（記録が残る）
+
+1.git logを確認
+$ git log --oneline
+
+2.指定のコミット履歴まで戻す
+$ git revert 693755b(コミット番号)
+
+
+
+リモート設定してpushするまで
+git init
+git add 特定のファイル(指定しない場合は . でいい)
+git commit -m "コミットメッセージ"
+git remote add origin リモートリポジトリのURL（他人のgitのリモートから引っ張る時はorigin部分をオリジナルの名前にする）
+
+外部リポジトリにpullrequestをあげるまで
+1. 相手のリポジトリをフォーク
+2. フォークしたリポジトリをクローンしてローカルリポジトリを作る
+git clone URL
+3. リモートのリポジトリを設定
+git remote add origin 自分のリモート
+git remote add オリジナル　相手のリモート
+※ ここで自分のリモート以外にプルリクエストを作る時は相手のリモートも一緒にセットする
+
+4.派生元のブランチにチェックアウトする
+git checkout -b ブランチ名
+
+5.ローカルで作業用のブランチを作る
+git checkout -b ブランチ名
+
+6. 作業内容をコミットする
+git add .
+git commit -m "コミットコメント"
+git push -u リポリトリ名(origin) ブランチ名(master)
+
+7. pull requestを作成
+リクエストをあげたいアカウントgitページで作成する
+
+gitで特定のXcodeプロジェクトファイルを開く
+Open -a Xcode WKWebView-CoustomHeader.xcodeproj/
+
+ターミナルで一つ前にいたディレクトリに戻る
+cd -
+
+git操作
+
+gitと連携
+$ git init
+
+# 必要であれば.gitignoreを作成し、バージョン管理しないファイルやディレクトリを記載（例：*.log）
+$ vim .gitignore
+
+# コミット 
+$ git add .
+$ git commit -m "Initial Commit"
+
+# リモートrepoの設定
+git remote add origin https://github.com/your-name/project-name.git
+
+# push
+git push -u origin master
+
+
+ブランチの確認
+ローカルブランチを確認
+git branch
+
+リモートブランチを確認
+git branch -r
+
+上記２つを一度に行う
+git branch -a
+
+差分の確認
+git diff
+
+現在のブランチから派生ブランチを作成する
+git branch BN
+
+作業ブランチを変更する
+git checkout BN
+
+上記２つを一度に行う
+git checkout -b ブランチ名
+
+Git強制チェックアウト
+git checkout --force ブランチ名
+
+現在の作業ブランチに指定ブランチをマージする
+git merge BN
+
+マージ後でも、元に戻せるようにする
+git merge --no-ff ブランチ名
+
+ブランチの削除
+git branch -d ブランチ名
+
+ブランチの削除(強制的)
+git branch -D ブランチ名
+
+リモート・リポジトリにブランチをプッシュする
+git push origin ブランチ名
+
+リモートブランチからローカルブランチを作成する
+git checkout -b BN origin/BN
+
+リモートリポジトリのブランチを取得して、ローカルブランチとする
+git fetch origin RemoteBN:LocalBN
+
+リモートブランチを削除する
+git push origin :ブランチ名
+
+ブランチの派生元ブランチを変更する
+git rebase ブランチ名
+
+ブランチを比較する
+git diff ブランチ名 ブランチ名
+
+リモートrepoの宛先を確認
+git remote -v
+
+リモートの向先を変更
+git remote set-url origin 新しいURL（向先）
+
