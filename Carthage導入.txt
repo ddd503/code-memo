@@ -1,0 +1,33 @@
+Carthage導入
+
+インストール
+brew install carthage
+
+Cartfileの生成
+touch Cartfile
+
+Cartfileの編集
+github "Alamofire/Alamofire" >= 4.5.1
+
+
+アップデート,インストール
+carthage update
+carthage update --platform ios
+carthage update SVProgressHUD（一部のみ）
+
+General > Embbedei Frameworksで入れたやつを紐ずける
+General > Linked Frameworks and Librariesで入れたやつを紐ずける
+
+New Run Script Phaseの追加
+スクリプト
+/usr/local/bin/carthage copy-frameworks
+
+path
+$(SRCROOT)/Carthage/Build/Mac/Alamofire.framework
+
+
+Xcode側でうまくビルドできないとき（ビルドし直し）
+carthage build
+
+参考
+https://qiita.com/ShinokiRyosei/items/9b856ebdec5379b6c631
