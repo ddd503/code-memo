@@ -1,5 +1,7 @@
 Swift コードメモ
 
+ハンドラーhandler
+static func update(model: Memo, completion: ((ActionType, Error?) -> Void)) {}
 
 // stringでメソッド名を指定して呼び出す（呼び出しは@objcをつける）
 self.perform(Selector("メソッド名"))
@@ -81,14 +83,30 @@ struct Constrains {
         static let deleteAllButton = "deleteAllButton".localized()
     }
 
-テーブルビュー　セルがない部分のセパレート線を消す
+テーブルビュー　セルがない部分のセパレート線を消す（空行）
 self.tableView.tableFooterView = UIView()
 
 
 テーブルビューの編集ボタンアクション
+作成
+navigationItem.rightBarButtonItem = editButtonItem
+モード切り替え
+override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        memoList.isEditing = editing
+    }
+
+オリジナルのタイトルつけるとき
 private func setupToolBar(isEditing: Bool) {
         editButton.title = isEditing ?
             Constrains.ToolBar.deleteAllButton : Constrains.ToolBar.addFolderButton
+    }
+
+テーブルビュー削除アクション(tableviewDataSource)
+ func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            self.delegate?.delete(index: indexPath.row)
+        }
     }
 
 
