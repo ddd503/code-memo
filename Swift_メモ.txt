@@ -1,5 +1,103 @@
 Swift コードメモ
 
+add subview ・・・配列の一番後ろに入れる
+insert subview・・・指定したところに入れる（対象は順番でも指定のviewの後ろとかでもいける）
+
+通知説明
+http://xyk.hatenablog.com/entry/2016/11/02/180204
+Xcode で Today Extension のデバッグ時にブレークポイントを有効にする方法
+http://www.minimalab.com/blog/2014/09/27/today-extension-degug/
+
+プッシュ通知のデバイストークンの取得方
+extension String {
+    public init(deviceToken: Data) {
+        self = deviceToken.map { String(format: "%.2hhx", $0) }.joined()
+    }
+}
+
+/// 通知受け取り時にextensionでtoken生成
+func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data!) {
+    let token = String(deviceToken: deviceToken)
+}
+
+一定時間後に処理を実行する方法
+DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+    // 0.5秒後に実行したい処理
+}
+
+値渡し、戻る
+// 遷移元のVCを取得して値渡し
+        guard
+            let navigationController = self.navigationController,
+            let memoListController = navigationController.viewControllers[navigationController.viewControllers.count - 2] as? MemoListController else {
+            // 何もせずに戻る
+            self.navigationController?.popViewController(animated: true)
+            return
+        }
+        // 結果をリスト画面に渡して戻る
+        memoListController.databaseActionType = type
+        memoListController.databaseError = error
+        
+        self.navigationController?.popViewController(animated: true)
+
+
+
+応用で指定の文字列を削除した上で文字列を返すことができるよ！！
+/// 文字列が「空文字orスペースのみ」でないかを判定
+    ///
+    /// - Parameter title: チェックする文字列
+    /// - Returns: true: 空文字orスペースのみ、false: スペースではないテキストが1文字以上入っている
+    private func hasText(title: String) -> Bool {
+        var checkTitle = title
+        while true {
+            guard let range = checkTitle.range(of: " ") else {
+                break
+            }
+            checkTitle.removeSubrange(range)
+        }
+        return checkTitle.isEmpty
+    }
+
+public extension String {
+    /// 文字列を”１行目”と”２行目以降”に分ける
+    ///
+    /// - 2行以上の文章　= [１行目, それ以降の文章]
+    /// - 1行の文章　= [１行目]
+    /// - nil(ありえない)　= []
+    func divideFirstLines() -> [String] {
+        var lines: [String] = self.components(separatedBy: .newlines)
+        guard lines.count >= 1 else { return [] }
+        let firstLine = lines[0]
+        lines.remove(at: 0)
+        guard lines.count >= 1 else { return [firstLine] }
+        let otherLine = lines.joined(separator: "\n")
+        return [firstLine, otherLine]
+    }
+}
+
+
+
+値渡しでもどる
+ // 遷移元のVCを取得して値渡し
+        guard
+            let navigationController = self.navigationController,
+            let memoListController = navigationController.viewControllers[navigationController.viewControllers.count - 2] as? MemoListController else {
+            // 普通に戻る
+            self.navigationController?.popViewController(animated: true)
+            return
+        }
+        // 結果をリスト画面に渡して戻る
+        memoListController.databaseActionType = type
+        memoListController.databaseError = error
+        
+        self.navigationController?.popViewController(animated: true)
+
+
+排列内のインデックスを順に取得
+for (index, value) in memoListCopy.enumerated() {}
+
+
+
 ハンドラーhandler
 static func update(model: Memo, completion: ((ActionType, Error?) -> Void)) {}
 
@@ -82,6 +180,17 @@ struct Constrains {
         static let addTaskButton = "addTaskButton".localized()
         static let deleteAllButton = "deleteAllButton".localized()
     }
+
+テーブルビュー
+スワイプ での変更モードの取得　感知（tableviewdelegate）
+ func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
+        "変更開始"
+    }
+    
+    func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) {
+        "変更完了"
+    }
+    
 
 テーブルビュー　セルがない部分のセパレート線を消す（空行）
 self.tableView.tableFooterView = UIView()
@@ -394,6 +503,43 @@ extension ModeListProvider: UITableViewDataSource {
     }
 }
 
+テーブル　必須
+import UIKit
+
+protocol FolderListDataSourceDelegate {
+    func delete(index: Int)
+}
+
+class FolderListDataSource: NSObject {
+    var folderList: [Folder] = []
+    var delegate: FolderListDataSourceDelegate?
+}
+
+extension FolderListDataSource: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.folderList.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: FolderListCell.identifier, for: indexPath) as? FolderListCell else {
+            fatalError("cell is nil")
+        }
+        return cell
+    }
+    
+    /// 削除のみ
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            self.delegate?.delete(index: indexPath.row)
+        }
+    }
+}
+
+
+テーブルセル nibの登録(setup時)
+self.folderList.register(UINib(nibName: FolderListCell.identifier, bundle: nil),
+                                 forCellReuseIdentifier: FolderListCell.identifier)
 
 セルクラスメソッド(cell)
 自身のidentifierを返す
@@ -1250,7 +1396,11 @@ extension Error {
 }
 
 ストリングファイルの使用
-まずstringを拡張
+まず以下のURLに沿ってstrigfileを作る
+https://qiita.com/simorgh3196/items/c9b04377dfa1425085c3
+
+stringを拡張するクラスを用意
+ローカライズ
 クラス名：String+Localized
 
 import Foundation
@@ -1260,6 +1410,7 @@ extension String {
     func localized() -> String {
         return NSLocalizedString(self, comment: "")
     }
+
 }
 
 使用法

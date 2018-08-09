@@ -1,3 +1,73 @@
+
+single.pyというファイルを現在の作業ディレクトリに作る
+kawaharadai$ touch single.py
+
+
+コンフリクト解消
+1. 派生元ブランチに移動
+2. リモートの現状を取得
+git fetch
+3. 派生元ブランチを最新にする
+git pull 派生元
+4. 派生先ブランチに移動
+5. 派生先に派生元をバックマージする
+git merge 派生元
+6. コンフリクト発生
+7. xcodeで派生先のブランチを開く
+（<<<<<<<で検索すると良い）
+8. 直してプッシュ
+
+
+ブランチ強制切り替え
+git checkout --force <ブランチ名>
+
+コミットに改行を入れる（複数行）
+$ git commit -m "コメント1行目" -m "コメント2行目" -m "コメント3行目…"
+
+リモートの履歴
+git log --oneline
+
+commitをやり直す
+1. 先ほどのコミットに入れ忘れたファイルを追加して、commit対象（=staged状態）にする
+$ git add .
+2. 上記の変更を直前のコミットに混ぜ込む
+$ git commit --amend
+
+
+addした変更を戻す
+$ git reset HEAD <ファイル名>
+
+add前の変更を取り消す
+# 特定のファイルの変更を取り消す
+$ git checkout <ファイル名>
+
+#特定のディレクトリ以下の変更を再起的に取り消す
+$git checkout <ディレクトリ名>
+
+# 全てを元に戻す
+$ git checkout .
+
+
+コミットをまとめる（プッシュ前）
+1. git log でコミット番号確認
+2. git rebase -i コミット番号 でリベース開始（まとめる予定のコミット群の一番古いコミット番号を指定）
+3. viでコミットをまとめる
+例(開始時)
+pick commit_id_2 commitメッセージ(2017/02/01)
+pick commit_id_3 commitメッセージ(2017/03/01)
+
+例(変更後、今回は一番古いコミットメッセージのみを採用し、そのほかのメッセージは削除)
+s commit_id_2 commitメッセージ(2017/02/01)
+s commit_id_3 commitメッセージ(2017/03/01)
+
+4. 内容を保存後、強制pushする
+（git push -f origin ブランチ名）
+
+vi操作について
+https://prev.net-newbie.com/linux/commands/vi.html
+
+
+
 git resetでgit commitを取り消す（記録が残らない）
 
 1.git logを確認
@@ -50,7 +120,7 @@ git push -u リポリトリ名(origin) ブランチ名(master)
 リクエストをあげたいアカウントgitページで作成する
 
 gitで特定のXcodeプロジェクトファイルを開く
-Open -a Xcode WKWebView-CoustomHeader.xcodeproj/
+WKWebView-CoustomHeader.xcodeproj/
 
 ターミナルで一つ前にいたディレクトリに戻る
 cd -
