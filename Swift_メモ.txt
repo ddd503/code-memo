@@ -239,6 +239,24 @@ struct Constrains {
 テーブルビュー　セルがない部分のセパレート線を消す（空行）
 self.tableView.tableFooterView = UIView()
 
+テーブルビュー　削除　アニメーション付き
+ // アニメーション付きで削除
+// データソース側の要素を削除後（DBの方も）
+self.dataSource.memoList.remove(at: 0)
+// 以下のコマンドで削除結果をアニメーション付きで反映
+self.memoList.deleteRows(at: [IndexPath(row: 形したrow, section: 消したrowのセクション)], with: .fade)
+
+// 全削除をアニメーションでやる場合
+ // アニメーション付きで削除
+            for _ in self.dataSource.memoList {
+                self.dataSource.memoList.remove(at: 0)
+                self.memoList.deleteRows(at: [IndexPath(row: 0, section: 0)], with: .fade)
+            }
+            self.memoList.reloadData() // 編集で単数削除選択時に全削除すると固まる問題への対応
+
+
+
+
 
 テーブルビューの編集ボタンアクション
 作成

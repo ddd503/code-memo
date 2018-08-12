@@ -1,5 +1,7 @@
 コマンドでファイルを作成
 touch .gitignore
+※ プロジェクトの途中からgitinnoreを入れるとき
+https://qiita.com/yuuAn/items/b1d1df2e810fd6b92574
 
 以下をコピペ
 
