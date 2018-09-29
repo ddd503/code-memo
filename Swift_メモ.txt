@@ -1,5 +1,91 @@
 Swift コードメモ
 
+NVActivityIndicatorViewの使い方
+デフォルトのインジケーターで良い場合
+インポート
+スタート
+NVActivityIndicatorPresenter.sharedInstance.startAnimating(ActivityData(message: "データ取得中"))
+ストップ
+NVActivityIndicatorPresenter.sharedInstance.stopAnimating()
+
+全部いじれるのはNVActivityIndicatorViewをインスタンス化してプロパティでもつ方法
+
+使いやすい方法
+protcol（NVActivityIndicatorViewable）を準拠するとstart,stopが使える、タイプも変えれる
+
+codableも持ちプロパティに初期値を与えれば空で定義できる
+protcolのデフォルト実装を型指定で行う
+extension protcolName where Self: UITableViewCell(指定する型) {
+// 何か
+}
+
+
+ナビバーのタイトルの更新
+self.navigationItem.title = title
+
+ナビバーの戻るボタンのデフォルトタイトルを消す
+storyboradのnavigationItemsのbackbuttonに空白入れる
+
+Dispatch queue
+また、DispathcQueue自体に、Serial、Concurrent、mainの３種類が存在します。
+それぞれ以下のように分類されています（公式ドキュメントも参照）。
+
+Serial：登録したタスクを、同時並行ではなく、登録した順に実行
+作り方：自身でラベル生成
+Concurrent：登録したタスクを、同時並行で実行
+デフォルトで用意されてqueue使う（global等）
+
+main：メインのUIスレッドでの実行。主にタスク内でUI操作を行う時などで使用
+
+
+CoreDataのロールバック（保存結果戻し）
+managedContext.rollback()
+
+URL UIImage 変換
+static func getImage(urlString: String) -> UIImage? {
+        do {
+            guard let url = URL(string: urlString) else { return nil }
+            let imageData = try Data(contentsOf: url, options: .mappedIfSafe)
+            return UIImage(data: imageData) ?? nil
+        } catch {
+            return nil
+        }
+    }
+
+ static func getImage(urlString: String) -> UIImage {
+        do {
+            guard let url = URL(string: urlString) else { return UIImage(named: "defaultImage")! }
+            let imageData = try Data(contentsOf: url, options: .mappedIfSafe)
+            return UIImage(data: imageData) ?? UIImage(named: "defaultImage")!
+        } catch {
+            return UIImage(named: "defaultImage")!
+        }
+    }
+
+
+
+キーボード設定
+enablesReturnKeyAutomatically：trueなら未入力のときリターンきーを無効にする、デフォルトfalse
+ローカルファイルのpath取得
+ guard let filePath = Bundle.main.path(forResource: "UserData-Sample", ofType: "json") else {
+            fatalError("json is not found in main Bundle.")
+        }
+
+配列　指定した方以外の値を削除する　取り除く
+flatMap(返り値使用しない)compactMap(返り値使用する)
+nil、optional削除
+["1", "2", "3"].map { Int($0) } // → [Optiona(1), Optiona(2), Optiona(3)]
+["1", "2", "3"].flatMap { Int($0) } // → [1, 2, 3]
+形違い削除
+["1", "2", "string", "3"].map { Int($0) } // → [Optiona(1), Optiona(2), nil, Optiona(3)]
+["1", "2", "string", "3"].flatMap { Int($0) } // → [1, 2, 3]
+
+
+lazy var プロパティ名 = 変数またはメソッド
+レイジープロパティとは
+レイジープロパティ（lazy stored property）とは、参照されるときに初めて初期値が設定されるプロパティのことである。
+レイジープロパティは以下のように定義する。インスタンス生成後に値を変更するプロパティなので定数（let）で宣言することはできない。
+
 セルのレイアウト
 複数の制約のONOFFを使い分ける場合は遠い方から設定
 どっちを優先するかを決めるのは、Content Hugging Priority
@@ -43,6 +129,15 @@ xcode > open tool > instruments > link
 prefetchDataSource
 
 
+デリゲートはプロトコルをつないでいくデザインパターン（引数、戻り値が固定のため、ロジックに左右されない）
+protcolは準拠していれば、絶対にprotcolメソッドを書かないといけないが、
+extentionでデフォルトメソッド内容を書いておけば書かなくてもよくなる（optional的なやつ）
+デフォルト実装書いてあれば、準拠先からselfのメソッドとしてデフォルトも呼べるし、準拠先に同名のメソッドを定義すれば、そっちが呼ばれる（デフォルトに勝てる）
+
+control+command+R でビルドせずにアプリを再起動できる
+
+プロトコルに準拠したコントローラーの書き方（どっちのメソッドも使える）
+vc: AreaListInterface & UIViewController
 
 add subview ・・・配列の一番後ろに入れる
 insert subview・・・指定したところに入れる（対象は順番でも指定のviewの後ろとかでもいける）
@@ -152,6 +247,18 @@ self.perform(Selector("メソッド名"))
         //TODO  : チームA
     }
 
+ハンドラー
+プロトコルprotcolにデフォルト引数を持たせるときはextension（引数を省略できる、渡しても渡さなくても良い）
+extension ProtocolName {
+    func errorAlert(message: String, completionHandler: ((Any) -> ())? = nil) {
+        let alert = UIAlertController(title: "エラー", message: message, preferredStyle: .alert)
+        let alertAction = UIAlertAction(title: "OK", style: .default, handler: completionHandler)
+        alert.addAction(alertAction)
+        AlertManager.present(alert: alert)
+//        self.present(alert, animated: true) // UIViewController自体を持っていない
+    }
+}
+
 アクセス修飾子
 
 getterもsetterも公開するプロパティ
@@ -236,7 +343,7 @@ struct Constrains {
     }
     
 
-テーブルビュー　セルがない部分のセパレート線を消す（空行）
+テーブルビュー　セルがない部分のセパレート線を消す（空行）余分、余白
 self.tableView.tableFooterView = UIView()
 
 テーブルビュー　削除　アニメーション付き
@@ -289,6 +396,9 @@ override func viewWillAppear(_ animated: Bool) {
             tableView.deselectRow(at: indexPathForSelectedRow, animated: true)
         }
     }
+
+ // スクロールを上まで戻す
+        self.jobOfferListTableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
 
 その値があるのかどうかを確認する方法
 guard let ~~~ {
@@ -471,7 +581,7 @@ https://qiita.com/s_emoto/items/5488667478c0339b4e83
 podでライブラリのエラーを無視する
 pod〜〜の上に
 inhibit_all_warnings!
-
+/Users/kawaharadai/xcode sorcefile/sample/DrawerMenu-Sample/DrawerMenu-Sample/Other/Bridging-Header.h
 
 staticをつければ、どこからでも呼べる（クラスメソッド的なやつ）
 finalは呼ばなければ絶対にアクセスできないクラス
@@ -599,7 +709,7 @@ extension FolderListDataSource: UITableViewDataSource {
 }
 
 
-テーブルセル nibの登録(setup時)
+テーブルセル nibの登録(setup時) セル登録
 self.folderList.register(UINib(nibName: FolderListCell.identifier, bundle: nil),
                                  forCellReuseIdentifier: FolderListCell.identifier)
 
@@ -746,6 +856,42 @@ DispatchQueue.global(qos: .default).async {
 画面外タップでキーボードとじる
 @IBAction func tapBackground(_ sender: Any) {
         self.view.endEditing(true)
+    }
+
+
+キーボードの出し入れのタイミングで画面をあげる　隠れないようにする
+ /// キーボードの出し入れのタイミングの通知を登録
+    private func registKeyboardNotification() {
+        let notification = NotificationCenter.default
+        notification.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        notification.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+
+/// キーボードが表示されたときの処理
+    ///
+    /// - Parameter notification: 通知情報
+    @objc func keyboardWillShow(notification: Notification) {
+        let rect = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+        let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double
+        UIView.animate(withDuration: duration!,
+                       animations: { [weak self] () in
+                        let transform = CGAffineTransform(translationX: 0,
+                                                          y: -(rect?.size.height)!)
+                        self?.view.transform = transform
+                        
+        })
+    }
+    
+    /// キーボードが非表示されたときの処理
+    ///
+    /// - Parameter notification: 通知情報
+    @objc func keyboardWillHide(notification: Notification) {
+        let duration = notification.userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? Double
+        UIView.animate(withDuration: duration!,
+                       animations: { [weak self] () in
+                        self?.view.transform = CGAffineTransform.identity
+        })
     }
 
 
@@ -929,6 +1075,40 @@ func handleError(error: Error) {
         }
     }
 
+UISearchBar
+seachBar
+
+seachBar.delegate = self
+// テキストフィールド内のクリアボタンを消す
+if let textfield = recordSearchBar.value(forKey: "searchField") as? UITextField {
+            textfield.clearButtonMode = .whileEditing
+        }
+
+// UISearchBarDelegate
+// 検索ボタンタップ時
+ func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let searchWord = searchBar.text else {
+            return
+        }
+        
+        searchBar.setShowsCancelButton(false, animated: true)
+        searchBar.resignFirstResponder()
+//        recordSearchAPI.requestAPI(seachWord: searchWord)
+    }
+    
+// 入力開始時
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.text = ""
+        searchBar.setShowsCancelButton(true, animated: true)
+    }
+    
+// キャンセルボタンタップ時
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        if searchBar.canResignFirstResponder {
+            searchBar.setShowsCancelButton(false, animated: true)
+            searchBar.resignFirstResponder()
+        }
+    }
 
 通知関連（notification）
 登録（基本コントローラーで登録して,deinitで削除）
@@ -1421,7 +1601,10 @@ DispatchQueue.main.async {
 クロージャー
 ハンドラー
 completion: (()-> Void)?
-
+引数あり（_を入れることで引数名の表示は省略される）
+completion: @escaping ((_ restData: [RestData], _ error: Error?) -> ())
+デフォルト引数あり（引数入力自体を省略できる）
+completionHandler: ((Any) -> ())? = nil
 
 日付
 Date変換

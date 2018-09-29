@@ -1,4 +1,7 @@
 
+カレントディレクトリをFinderで開く
+open .
+
 single.pyというファイルを現在の作業ディレクトリに作る
 kawaharadai$ touch single.py
 
