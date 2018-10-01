@@ -1,7 +1,86 @@
 Swift コードメモ
 
+@IBOutlet weak var restrantListTableView: UITableView! {
+        didSet {
+            // テーブルビューの各種設定
+        // デリゲート
+            restrantListTableView.delegate = self
+        // データソース
+            restrantListTableView.dataSource = self
+        // カスタムセルの登録
+            restrantListTableView.register(UINib(nibName: RestrantInfoCell.identifier, bundle: nil),
+                                           forCellReuseIdentifier: RestrantInfoCell.identifier)
+        // カスタムフッター用セルの登録
+            restrantListTableView.register(UINib(nibName: ReloadView.identifier, bundle: nil),
+                                           forCellReuseIdentifier: ReloadView.identifier)
+        // カスタムフッターの登録（上記で用意したセルを当てる）
+            if let reloadView = restrantListTableView.dequeueReusableCell(withIdentifier: ReloadView.identifier) as? ReloadView {
+                reloadView.indicator.isHidden = true
+                restrantListTableView.tableFooterView = reloadView
+// 一旦高さ0で隠しておく
+                restrantListTableView.tableFooterView?.frame.size.height = 0
+            }
+        }
+    }
+    
+
+カスタムフッターの使い方
+上記で登録してある前提で
+
+let reloadView = self.restrantListTableView.tableFooterView as! ReloadView
+reloadView.indicator.isHidden = isHidden
+// 高さを戻して見えるようにする
+reloadView.frame.size.height = isHidden ? 0 : 50
+
+
+// それぞれの準拠元で柔軟的に型を決定できる値（protcol版ジェネリクス）
+    associatedtype ViewObject
+    // Presenterクラス側でViewクラスを保持する用propatie
+    // デフォルト実装で、自動的に渡されたViewクラスをPresenterクラスのinterface変数(protcol)にセットする
+    var interface: ViewObject? { get set }
+
+ /// lacalのjsonファイルのpathを取得
+    ///
+    /// - Parameter fileName: ファイル名
+    /// - Returns: jsonファイルのpath(失敗の場合はnil)
+    func getLocalJsonFilePath(fileName: String) -> String? {
+        return Bundle.main.path(forResource: fileName, ofType: "json")
+    }
+
+/// TestProjectに置いてあるlacalのjsonファイルのpathを取得
+    ///
+    /// - Parameter fileName: ファイル名
+    /// - Returns: jsonファイルのpath(失敗の場合はnil)
+    func getLocalJsonFilePathFromTestPJ(fileName: String) -> String? {
+        return Bundle(for: type(of: self)).path(forResource: fileName, ofType: "json")
+    }
+
+@testable 
+テスト用、アクセスレベルinternalまでのデータにアクセスできるようになる
+
+MVPとMVVMの違い
+MVP・・・ViewとPresenterが参照しあう（お互いに保持する、Presenter側はプロトコル準拠したViewを保持）
+MVVM・・・ViewとPresenterがお互いを知らない（保持しない）
+→ View側でPresenter側のプロパティを監視する（プロパティ名だけで繋がるため、お互いに保持しない、疎結合になるためテストしやすい）
+
+
+Emmbedframeworkの導入
+/// 外部からinitできるようアクセスレベルを変更（必須）
+    public init() {}
+
+
+cocoaPodsKeyをいれた後の呼び出し方
+private let apiAccessKey = MVPAPISampleXcodeprojKeys().gurunaviApiKey
+
+DI・・・初期値を持たせて初期化する（期待の結果を持たせてインスタンスを作ること）
+
+presenterはweakでもつ・・・VCから参照する、presenterからVCを参照する相互参照から
+
+associatedtype 変数名・・・プロトコル内で使えるジェネリクス（presentterのinitをジェネリクス化　base interfice）
+
+
 NVActivityIndicatorViewの使い方
-デフォルトのインジケーターで良い場合
+デフォルトのインジケーターで良い場合（シングルトンであらかじめ定義されているデフォルトをそのまま使う、文字のセットはできる）
 インポート
 スタート
 NVActivityIndicatorPresenter.sharedInstance.startAnimating(ActivityData(message: "データ取得中"))

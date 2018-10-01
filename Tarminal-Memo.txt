@@ -1,3 +1,20 @@
+Git でローカルの変更を元に戻すには
+
+git checkout ファイル名
+
+1. git resetでgit addを取り消す
+git resetでgit addを取り消します。
+addを取り消すというかステージングにあがっているものを取り消すといったほうが良いでしょうか。
+
+addしたファイルを取り消す
+$ git reset HEAD [ファイルパス]
+
+git add でファイルごとにaddする
+git add ファイルパス
+
+差分確認 
+git diff ファイルパス
+
 
 カレントディレクトリをFinderで開く
 open .
