@@ -1,5 +1,7 @@
 Swift コードメモ
 
+delegateをweakで持てないのはprotocolがclass対象になっていないから
+
 @IBOutlet weak var restrantListTableView: UITableView! {
         didSet {
             // テーブルビューの各種設定
@@ -745,14 +747,11 @@ extension ModeListProvider: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ModeListCell", for: indexPath)
-        
-        cell.textLabel?.text = modeListData[indexPath.row]["name"]
-        
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: MenuViewCell.identifier, for: indexPath) as? MenuViewCell else {
+            fatalError("cell is nil")
+        }
         return cell
-    }
-}
+    }}
 
 テーブル　必須
 import UIKit
