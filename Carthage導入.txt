@@ -7,7 +7,11 @@ Cartfileの生成
 touch Cartfile
 
 Cartfileの編集
-github "Alamofire/Alamofire" >= 4.5.1
+github "realm/realm-cocoa" == 3.6.0
+github "Alamofire/Alamofire" >= 4.7.0
+github "ccgus/fmdb" == 2.7.4
+github "Alamofire/AlamofireImage" == 3.3.1
+github "onevcat/Kingfisher" == 4.8.1
 
 
 アップデート,インストール
@@ -15,7 +19,9 @@ carthage update
 carthage update --platform ios
 carthage update SVProgressHUD（一部のみ）
 
-General > Embbedei Frameworksで入れたやつを紐ずける
+※ carthage update --no-use-binaries（バイナリを作らない）
+
+General > Embbedei Frameworksで入れたやつを紐ずける  （これはいらない）
 General > Linked Frameworks and Librariesで入れたやつを紐ずける
 
 New Run Script Phaseの追加
@@ -23,7 +29,9 @@ New Run Script Phaseの追加
 /usr/local/bin/carthage copy-frameworks
 
 path
-$(SRCROOT)/Carthage/Build/Mac/Alamofire.framework
+$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework
+$(SRCROOT)/Carthage/Build/iOS/Kingfisher.framework
+$(SRCROOT)/Carthage/Build/iOS/RealmSwift.framework
 
 
 Xcode側でうまくビルドできないとき（ビルドし直し）

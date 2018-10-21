@@ -1,5 +1,35 @@
 Swift コードメモ
 
+サブクラスのVCのステータスバーの色をセットする
+class ThemeViewController: UIViewController {
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setNeedsStatusBarAppearanceUpdate()
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
+}
+
+ナビゲーションコントロラーの子の時はナビVCクラスを作って以下をoverrideする必要あり
+override var childForStatusBarStyle: UIViewController? {
+        return self.visibleViewController
+    }
+    
+    override var childForStatusBarHidden: UIViewController? {
+        return self.visibleViewController
+    }
+
+
+self のアンラップ
+guard let `self` = self else { return }
+マルチスレッドで CoreDataのオブジェクトを扱えるようにするにはスレッドごとに NSManageObjectContextを用意する必要があります。
+
+throws ・・・do catch以外の要素を使うときはメソッド自体をthrowsにする（ifで対応できる）
+
 delegateをweakで持てないのはprotocolがclass対象になっていないから
 
 @IBOutlet weak var restrantListTableView: UITableView! {
@@ -579,7 +609,7 @@ self.navigationController?.popToRootViewController(animated: true)
 プリント
 print
 print("中身は\(url)")
-
+:-1: Build input file cannot be found: '/Users/kawaharadai/Library/Developer/Xcode/DerivedData/Stationery-Project-bncjtwhcbynhjwebrmshnajrlmnh/Build/Products/Debug-iphonesimulator/Stationery-Project.app/PlugIns/Stationery-ProjectTests.xctest/Stationery-ProjectTests'
 
 他のバージョンで使う場合のメモ
  // TODO: デザイン確定後修正する
