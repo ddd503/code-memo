@@ -1,5 +1,40 @@
 Swift コードメモ
 
+サーチバーをナビばーに入れる
+ let searchController = UISearchController(searchResultsController: nil)
+        navigationItem.searchController = searchController
+        searchController.searchResultsUpdater = self
+        // 検索バーの下の空間を検索結果か検索候補どちらにするかを決める（true: 検索候補、false: 検索結果）
+        searchController.obscuresBackgroundDuringPresentation = false
+        // UISearchControllerをUINavigationItemのsearchControllerプロパティにセットする。
+        // trueだとスクロールした時にSearchBarを隠す（デフォルトはtrue）
+        // falseだとスクロール位置に関係なく常にSearchBarが表示される
+        navigationItem.hidesSearchBarWhenScrolling = true
+
+
+largetitleの色変更
+UINavigationBar.appearance（）。largeTitleTextAttributes = 
+    [NSAttributedStringKey.foregroundColor：UIColor.green]
+
+
+  /// PullToRefresh時のアクション
+    @objc func pullToRefresh(sender: UIRefreshControl) {
+        interface?.startIndicator()
+        datasource.callApi(type: .droidAPI(parameters: [:]))
+    }
+
+PullToRefresh プル
+let refreshControl = UIRefreshControl()
+            refreshControl.tintColor = .white
+            refreshControl.addTarget(presenter,
+                                     action: #selector(presenter.pullToRefresh(sender:)),
+                                     for: .valueChanged)
+            tableView.refreshControl = refreshControl
+
+タップしたテーブルビューの大きさを取得
+let cellFrame = tableView.convert(tableView.rectForRow(at: indexPath),
+                                          to: tableView.superview)
+
 サブクラスのVCのステータスバーの色をセットする
 class ThemeViewController: UIViewController {
 
