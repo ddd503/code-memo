@@ -1,5 +1,127 @@
 Swift コードメモ
 
+２つのプロトコル準拠
+Decodable & Encodable
+
+
+画像ファイルの種類によって、ツールバーに入るボタンを動的に設定している（ボタン自体はストーリーボードの画面外にセットしてある）
+if asset.mediaType == .video {
+            toolbarItems = [favoriteButton, space, playButton, space, trashButton]
+        } else {
+            // In iOS, present both stills and Live Photos the same way, because
+            // PHLivePhotoView provides the same gesture-based UI as in the Photos app.
+            toolbarItems = [favoriteButton, space, trashButton]
+        }
+ツールバーのボタンの動的切り替え
+https://qiita.com/_ha1f/items/6ae8ece70107f2944a78
+
+
+navigationVCの子VCにてViewタッチでナビバーを閉じるアニメーション設定（viewのsubviewで別のタッチイベントがあるとそちらが優先される）
+navigationController?.hidesBarsOnTap = true
+
+
+ナビバーの表示/非表示のタイミングでviewの背景を変える
+ override func viewWillLayoutSubviews() {
+        let isNavigationBarHidden = navigationController?.isNavigationBarHidden ?? false
+        view.backgroundColor = isNavigationBarHidden ? .black : .white
+    }
+
+
+
+
+
+インクリメントサーチ（UISearchBarデリゲート）
+   func searchBar(_ searchBar: UISearchBar, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.1) {
+            // 文字入力許可後0.1秒後に検索を開始する
+            DispatchQueue.main.async {
+                self.presenter.search(word: self.navigationItem.searchController?.searchBar.text)
+            }
+        }
+        return true
+    }
+
+@testable import Data
+
+Coredata
+Predicateの複数指定
+// 検索条件指定
+            let searchTitlePredicate = NSPredicate(format: "title CONTAINS[c] %@", searchWord)
+            let searchNamePredicate = NSPredicate(format: "speakerName CONTAINS[c] %@", searchWord)
+            let searchDescriptionPredicate = NSPredicate(format: "descriptionText CONTAINS[c] %@", searchWord)
+            
+                        fetchRequest.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: [searchTitlePredicate,
+                                                                                                    searchNamePredicate,
+                                                                                                    searchDescriptionPredicate])
+            l
+エンティティの全削除
+/// 全件削除
+    private func allDelete(entityName: String) {
+        let context = CoreDataManager.shered.mainThreadContext()
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        try! context.execute(deleteRequest)
+    }
+
+
+Swiftにおけるclassとstructの使い分け
+・カプセル化してプロパティを持ちたいとき・・・struct
+・プロパティを持つ必要がない時やカプセル化として使用する必要がない時・・・class
+https://cockscomb.hatenablog.com/entry/choosing-between-classes-and-structures
+
+
+テーブルビューのスクロールビュー一番上まで
+tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
+
+
+protcolをオプショナル（実装必須ではない）にする
+// 各画面が必要に応じてデリゲートを受けられるようにオプショナル型で宣言
+@objc public protocol CoreDataManagerDelegate: class {
+    /// 全ての記事情報を取得
+    @objc optional func fetchedAllArticleItems(_ items: [ArticleItem])
+    /// カテゴリー指定で記事情報を取得
+    @objc optional func fetchedArticleItemsByCategory(_ items: [ArticleItem])
+    /// 記事情報の取得に失敗
+    func failedFetch(error: Error)
+    // TODO: - 各種処理のエラーハンドリングが必要
+}
+
+
+スクロールを検知する方法（上に、下に）
+1. Viewでスクロールの開始位置と開始タイミングをデリゲートでキャッチ
+func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        // スクロールごとに開始ポイントをプロパティに保持する(    var beginScrollPoint = CGPoint(x: 0, y: 0)
+)
+        presenter.beginScrollPoint = scrollView.contentOffset
+    }
+    
+func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        presenter.didScroll(contentOffsetY: scrollView.contentOffset.y)
+    }
+
+
+2. Presenterで上にスクロールor下スクロールを判定（上で取った開始位置を渡してあげる）
+ /// スクロールを監視
+    ///
+    /// - Parameter contentOffsetY: Y軸のスクロール値
+    func didScroll(contentOffsetY: CGFloat) {
+// プロトコルを着火してView側で何かする（Bool値を渡している）
+        interface?.searchBarIsHidden(beginScrollPoint.y < contentOffsetY)
+    }
+例：
+presenter側
+  /// サーチバーの表示非表示を切り替える
+    func searchBarIsHidden(_ isHidden: Bool)
+view側
+    func searchBarIsHidden(_ isHidden: Bool) {
+//        navigationItem.hidesSearchBarWhenScrolling = isHidden
+    }
+
+
+文字を入れた場合のサイズをとる
+ let categrySize = presenter.categoryList[indexPath.row].title.size(withAttributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15.0)])
+
+
 サーチバーをナビばーに入れる
  let searchController = UISearchController(searchResultsController: nil)
         navigationItem.searchController = searchController
