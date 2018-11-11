@@ -1,5 +1,23 @@
 Swift コードメモ
 
+tableview in collection view
+tableviewcell 内の collection view をstackviewで囲むとcell生成メソッドが走らない
+
+アニメーションデリゲート（コントローラー側）
+extension ListViewController: UIViewControllerTransitioningDelegate {
+    
+    func animationController(forPresented presented: UIViewController,
+                             presenting: UIViewController,
+                             source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return CustomAnimator(duration: 0.5, isPresenting: true)
+    }
+    
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return CustomAnimator(duration: 0.5, isPresenting: false)
+    }
+
+}
+
 ２つのプロトコル準拠
 Decodable & Encodable
 
@@ -983,6 +1001,13 @@ self.folderList.register(UINib(nibName: FolderListCell.identifier, bundle: nil),
 static var identifier: String {
         return String(describing: self)
     }
+
+
+自信のnibを返す（xibの登録時に呼ぶ、上と一緒に使う）
+static func nib() -> UINib {
+        return UINib(nibName: identifier, bundle: nil)
+    }
+    
 
 
 /// NSDataのフォーマットを変更
