@@ -76,6 +76,9 @@ $git checkout <ディレクトリ名>
 # 全てを元に戻す
 $ git checkout .
 
+コミットの取り消し
+直前のコミットをなかった事にするには
+git reset --hard HEAD^
 
 コミットをまとめる（プッシュ前）
 1. git log でコミット番号確認

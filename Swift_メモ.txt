@@ -1,5 +1,16 @@
 Swift コードメモ
 
+BlurViewの単体は単純に曇りガラス
+BlurViewのエフェクト付きの方はBlurの中のViewを透明などブラーに合わせた見た目に勝手に調整してくれる
+
+
+fetchControllerのセクションとせる
+セクションごとのオブジェクトの数
+fetchController.sections![0].numberOfObjects
+セクションごとのオブジェクト
+fetchController.sections![0].objects
+
+
 tableview in collection view
 tableviewcell 内の collection view をstackviewで囲むとcell生成メソッドが走らない
 
