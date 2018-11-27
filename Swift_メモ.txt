@@ -1,5 +1,27 @@
 Swift コードメモ
 
+tableviewの縦に動いた瞬間に横のスクロールをとる（visible,見えているテーブルビューの開始時）
+
+XcodeProjectテンプレートの作り方
+
+protcolはその人にしか、つけられないようにする（）
+
+
+
+
+戻り値使わない
+@discardableResult
+
+
+UIColorカラーリテラル
+#colorLiteral(red: 0.4274509804, green: 0.7568627451, blue: 0.6196078431, alpha: 1)
+
+
+ステータスバー　statusbarの色変える（VCごとに設定）
+ override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+
 BlurViewの単体は単純に曇りガラス
 BlurViewのエフェクト付きの方はBlurの中のViewを透明などブラーに合わせた見た目に勝手に調整してくれる
 
