@@ -1,5 +1,78 @@
 Swift コードメモ
 
+git 打ち消し線
+~~ここが打消しされるよ~~
+
+DispatchQueueの使い方
+種類について（一部）
+直列、メインスレッド
+let queue = DispatchQueue.main
+直列、サブスレッド
+let queue = DispatchQueue(label: "jp.sample.queue")
+並列、サブスレッド
+let queue = DispatchQueue.global(qos: .default)
+let queue = DispatchQueue(label: "jp.sample.queue", attributes: .concurrent)
+
+正規表現でのパターンマッチ判定
+public func isMatch(pattern: String) -> Bool {
+        guard let expression = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) else { return false }
+        let range = NSRange(location: 0, length: self.count)
+        let mathes = expression.matches(in: self, options: .anchored, range: range)
+        return mathes.count > 0
+        
+使用例
+if string.isMatch(pattern: "[a-zA-Z0-9]+://") {}
+
+
+
+正規表現でのパターンマッチングを管理するenum
+
+enum Pattern: Int, CaseIterable {
+    case scheme
+    
+    func match(string: String) -> [String] {
+        let objcString = string as NSString
+        let range = NSRange(location: 0, length: objcString.length)
+        let expression = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive)
+        let matches = expression?.matches(
+            in: string,
+            options: .withoutAnchoringBounds,
+            range: range
+        )
+        return matches?.compactMap({ return objcString.substring(with: $0.range) }) ?? []
+    }
+    
+    private var pattern: String {
+        switch self {
+        case .scheme: return "[a-zA-Z0-9]+://[^ \\n]+"
+        }
+    }
+    
+}
+
+
+文字列の前後の空白と改行を削除
+word?.trimmingCharacters(in: .whitespacesAndNewlines)
+
+
+
+
+extension String {
+    /// 指定文字列を文章内から取り除く
+    ///
+    /// - Parameter text: 取り除く文字列
+    /// - Returns: 処理結果
+    func trim(text: String) -> String {
+        return self.replacingOccurrences(of: text, with: "", options: .literal, range: nil)
+    }
+}
+
+
+struct PhotoLibraryEntityをExtensionで子プロパティを定義する
+（ネストを減らす）
+
+
+
 tableviewの縦に動いた瞬間に横のスクロールをとる（visible,見えているテーブルビューの開始時）
 
 XcodeProjectテンプレートの作り方
@@ -914,6 +987,8 @@ objects.map { Folder(value: $0) }
 https://qiita.com/motokiee/items/cf83b22cb34921580a52
 
 for文
+(0..<10).map {//処理}
+
 for i in 0..<10 {
     //処理
 }
