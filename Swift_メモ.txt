@@ -1,5 +1,41 @@
 Swift コードメモ
 
+switch文で複数条件での判定ができる
+
+switch (Bool1, Bool2) {
+case (true, false):
+
+case (true, _):
+
+case (false, true):
+
+case (false, false):
+}
+
+シングルトン
+static let shared = クラス　で持って
+initはprivateにする
+
+アプリの設定を開く
+guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else { return }
+        if UIApplication.shared.canOpenURL(settingsUrl) {
+            UIApplication.shared.open(settingsUrl, options: [:], completionHandler: nil)
+        }
+
+ボタンのタイトルを変えるのは        
+button.setTitle(model.buttonTitle, for: .normal)
+
+
+ターゲットiOS11からXCAsset for Colorsの使用ができる
+Assetsファイルで色を管理できるため、名前で引っ張れる、storyボードでも使える
+
+
+// 並列キュー / attribute指定あり(.concurrent）
+let dispatchQueue = DispatchQueue(label: "queue", attributes: .concurrent)
+
+// 直列キュー / attibutes指定なし
+let dispatchQueue = DispatchQueue(label: "queue")
+
 git 打ち消し線
 ~~ここが打消しされるよ~~
 
