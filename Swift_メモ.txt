@@ -1,5 +1,24 @@
 Swift コードメモ
 
+lazyのreturnは初期値と言うだけで値は保持される
+private lazy var imageCachingManager = {
+        return PHCachingImageManager()
+    }()
+
+microvcでcellを作るときは各セルvcのviewDidLoadは使い回しのセル分しか走らない（最初の７〜８めまでくらい）
+なので、必須プロパティのdidSetを更新、リセットの起点とする
+
+plistからのデータ取得
+ guard let filePath = Bundle.main.path(forResource: "AreaDataList", ofType:"plist"), let listData = NSDictionary(contentsOfFile: filePath) else { fatalError() }
+        print(listData)
+
+enumの個別ケース比較はif caseのマッチパターンでできる
+if case .pullToRefresh = type { endPullToRefresh() }
+
+
+配列に配列をつなげる
+append(contentsOf: [newValue])
+
 switch文で複数条件での判定ができる
 
 switch (Bool1, Bool2) {
@@ -235,6 +254,13 @@ tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: fal
 
 
 protcolをオプショナル（実装必須ではない）にする
+
+以下の書き方を参考にする
+
+public protocol UIApplicationDelegate : NSObjectProtocol(どのobjectを対象にするかなので、classでも良い) {
+optional public func applicationDidFinishLaunching(_ application: UIApplication)
+}
+
 // 各画面が必要に応じてデリゲートを受けられるようにオプショナル型で宣言
 @objc public protocol CoreDataManagerDelegate: class {
     /// 全ての記事情報を取得
@@ -714,6 +740,20 @@ extension Array {
 
 
 Codableの使い方
+
+ローカルjsonの取得
+if let path = Bundle.main.path(forResource: "test", ofType: "json") {
+    do {
+          let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
+          let jsonResult = try JSONSerialization.jsonObject(with: data, options: .mutableLeaves)
+          if let jsonResult = jsonResult as? Dictionary<String, AnyObject>, let person = jsonResult["person"] as? [Any] {
+                    // do stuff
+          }
+      } catch {
+           // handle error
+      }
+}
+
 
 // 単一
  do {
