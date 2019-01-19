@@ -1,5 +1,7 @@
 Swift コードメモ
 
+extension内ではstoredプロパティ(格納型)は定義できないcomputedプロパティ(計算型)のみ
+
 lazyのreturnは初期値と言うだけで値は保持される
 private lazy var imageCachingManager = {
         return PHCachingImageManager()
@@ -182,6 +184,19 @@ extension ListViewController: UIViewControllerTransitioningDelegate {
 ２つのプロトコル準拠
 Decodable & Encodable
 
+
+codable準拠のstructでパースするプロパティを制限できる
+struct Person: Codable { 
+    var firstName: String 
+    var lastName: String 
+    var nickname: String? 
+　　　
+　　　ここの2つだけパースする
+    private enum CodingKeys: String, CodingKey { 
+     case firstName
+     case lastName 
+    } 
+} 
 
 画像ファイルの種類によって、ツールバーに入るボタンを動的に設定している（ボタン自体はストーリーボードの画面外にセットしてある）
 if asset.mediaType == .video {
@@ -1181,6 +1196,15 @@ self.folderList.register(UINib(nibName: FolderListCell.identifier, bundle: nil),
                                  forCellReuseIdentifier: FolderListCell.identifier)
 
 セルクラスメソッド(cell)
+
+xibファイルのインスタンスを取得する（テーブルビューなど以外で再利用メソッドがない場合）
+class func instance() -> TableViewHeader {
+        guard let view = TableViewHeader.nib().instantiate(withOwner: self, options: nil).first as? TableViewHeader else {
+            fatalError("failuer get xib")
+        }
+        return view
+    }
+
 自身のidentifierを返す
 static var identifier: String {
         return String(describing: self)
