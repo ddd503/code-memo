@@ -1,5 +1,7 @@
 Swift コードメモ
 
+stackViewは内側(子View)の制約を最優先にして大きさを変える（自身が外と制約が付いていても）
+
 extension内ではstoredプロパティ(格納型)は定義できないcomputedプロパティ(計算型)のみ
 
 lazyのreturnは初期値と言うだけで値は保持される
