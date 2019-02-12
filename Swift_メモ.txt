@@ -1,5 +1,37 @@
 Swift コードメモ
 
+SafeAreaを持っているか
+private func hasSafeArea() -> Bool {
+        let insets = UIApplication.shared.keyWindow?.safeAreaInsets ?? UIEdgeInsets.zero
+        return ((insets.top > 0) && (insets.bottom > 0)) || ((insets.left > 0) && (insets.right > 0))
+    }
+
+
+UICollectionViewFlowLayoutのサイズ指定のいろいろ
+テーブルビュー 的なやつ
+        let ddd = CGSize(width: cv.bounds.inset(by: cv.layoutMargins).size.width, height: 70)
+        itemSize = ddd
+テーブルビュー 的なやつで横レイアウトの時は２列になる
+ let avWidth = cv.bounds.inset(by: cv.layoutMargins).size.width
+        let min = CGFloat(300)
+        let max = Int(avWidth / min)
+        let length = (avWidth / CGFloat(max)).rounded(.down)
+        itemSize = CGSize(width: length, height: 70)
+
+
+
+
+出ているVCの先頭は
+
+private func isPresentedDetailQRCodeView() -> Bool {
+        return self.presentedViewController as? DetailQRCodeViewController != nil
+    }
+
+
+親以外のViewからみた座標を取得する（中心座標など）
+親View.convert(座標を取得したい子View, to: 親View以外のView（このViewからみた座標）)
+
+
 stackViewは内側(子View)の制約を最優先にして大きさを変える（自身が外と制約が付いていても）
 
 extension内ではstoredプロパティ(格納型)は定義できないcomputedプロパティ(計算型)のみ
