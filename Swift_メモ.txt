@@ -1,5 +1,23 @@
 Swift コードメモ
 
+テストはモッククラスで使いたい値はprotoclに定義して抽象化しておく
+
+private extension String {
+
+    // URLとしての形式、有効性に問題があった場合はnilを返す
+    var formalUrl: URL? {
+        guard let url = URL(string: self) else { return nil }
+        return UIApplication.shared.canOpenURL(url) ? url : nil
+    }
+
+}
+
+let scaleTransform = CGAffineTransform(scaleX: 1.0, y: diffarence)
+let translationTransform = CGAffineTransform(translationX: 0, y: transition.y)
+// 移動と伸縮を同時にやる
+baseView.transform = scaleTransform.concatenating(translationTransform)
+
+
 collectionViewのinsets込みのwidth（レイアウトのサブクラスで使う）
 private var contentWidth: CGFloat {
         guard let collectionView = collectionView else { return 0 }
