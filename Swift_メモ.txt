@@ -1,5 +1,69 @@
 Swift コードメモ
 
+
+extension CollectionViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let length = collectionView.frame.size.width / 3
+        return CGSize(width: length, height: length)
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 0 // デフォルトは10だから明示的に指定する(storyboard側で変えてもいい)
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 0 // デフォルトは10だから明示的に指定する(storyboard側で変えてもいい)
+    }
+}
+
+
+ // ナビバー分のoffsetを自動調節
+        photoListView.contentInsetAdjustmentBehavior = .always
+
+
+swift4のKVO
+プロパティでobserverが保持されていれば、監視を続ける（add removeいらない）
+var photoListViewContentOffsetObserver: NSKeyValueObservation?
+
+photoListViewContentOffsetObserver = photoListView.observe(\.contentOffset, options: [.new, .old]) { (_, value) in
+            print(value)
+        }
+
+
+
+タイマー（連続実行）
+// スタート
+        autoScrollTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { (timer) in
+            print("インターバルごとのタスク実行")
+        })
+
+        // ストップ
+        autoScrollTimer.invalidate()
+
+
+絶対値（Int）
+let x = -20
+print(abs(x)) // 20
+
+絶対値（Double, Float）
+let y = -3.14
+print(fabs(y)) // 3.14
+整数では abs(整数), 少数では fabs(少数)。
+
+配列でoffsetが持てる(enumeratedを使う)
+indexs.enumerated().forEach
+
+アラートアクションを外から渡す
+メソッド
+private func showAllItems(action: UIAlertAction)
+
+渡すとき
+actionHandler: showAllItems
+
+カスタムのXibを取得（インスタンス化）
+class func make() -> FinishView {
+        let view = UINib(nibName: String(describing: FinishView.self), bundle: .main).instantiate(withOwner: self, options: nil).first as! FinishView
+        return view
+    }
+
 テストはモッククラスで使いたい値はprotoclに定義して抽象化しておく
 
 private extension String {
