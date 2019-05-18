@@ -14,6 +14,57 @@ extension CollectionViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
+let referenceDateString = "0000/00/00 00:00:00"
+
+func createReferenceDate(dateString: String) -> Date? {
+    let dateFormater = DateFormatter()
+    dateFormater.locale = Locale(identifier: "ja_JP")
+    dateFormater.dateFormat = "yyyy/MM/dd HH:mm:ss"
+    return dateFormater.date(from: dateString)
+}
+
+// ランダムに指定の日より将来の日付を生成
+func generateRandomFeatureDate(daysBack: Int, referenceDate: Date)-> Date {
+    let day = arc4random_uniform(UInt32(daysBack))
+    let hour = arc4random_uniform(23)
+    let minute = arc4random_uniform(59)
+
+    let gregorian  = NSCalendar(calendarIdentifier: NSCalendar.Identifier.gregorian)
+    var offsetComponents = DateComponents()
+    offsetComponents.day = Int(day) + 1
+    offsetComponents.hour = Int(hour)
+    offsetComponents.minute = Int(minute)
+
+    let randomDate = gregorian?.date(byAdding: offsetComponents, to: referenceDate, options: .init(rawValue: 0) )
+    return randomDate!
+}
+
+generateRandomFeatureDate(daysBack: 1,
+                          referenceDate: createReferenceDate(dateString: referenceDateString)!)
+
+// ランダムに指定の日より過去の日付を生成
+func generateRandomPastDate(daysBack: Int, referenceDate: Date)-> Date {
+    let day = arc4random_uniform(UInt32(daysBack))
+    let hour = arc4random_uniform(23)
+    let minute = arc4random_uniform(59)
+
+    let gregorian  = NSCalendar(calendarIdentifier: NSCalendar.Identifier.gregorian)
+    var offsetComponents = DateComponents()
+    offsetComponents.day = -(Int(day) + 1)
+    offsetComponents.hour = -(Int(hour))
+    offsetComponents.minute = -(Int(minute))
+
+    let randomDate = gregorian?.date(byAdding: offsetComponents, to: referenceDate, options: .init(rawValue: 0) )
+    return randomDate!
+}
+
+generateRandomPastDate(daysBack: 1,
+                       referenceDate: createReferenceDate(dateString: referenceDateString)!)
+
+
+
+
+
 
  // ナビバー分のoffsetを自動調節
         photoListView.contentInsetAdjustmentBehavior = .always
