@@ -62,6 +62,33 @@ generateRandomPastDate(daysBack: 1,
                        referenceDate: createReferenceDate(dateString: referenceDateString)!)
 
 
+func ddd(count: (one: Int, two: Int),
+         reference: (one: (over: Int, under: Int), two: (over: Int, under: Int)),
+         referenceDateString: String) {
+    forRandomDays(count: count.one, reference: reference.one, referenceDateString: referenceDateString)
+    print("------------")
+    forRandomDays(count: count.two, reference: reference.two, referenceDateString: referenceDateString)
+}
+
+func forRandomDays(count: Int, reference: (over: Int, under: Int), referenceDateString: String) {
+    let featureDays = (0..<reference.over).map { _ in
+        generateRandomFeatureDate(daysBack: 1000,
+                                  referenceDate: createReferenceDate(dateString: referenceDateString)!)
+    }
+    let pastDays = (0..<reference.under).map { _ in
+        generateRandomPastDate(daysBack: 1000,
+                               referenceDate: createReferenceDate(dateString: referenceDateString)!)
+    }
+
+    print(featureDays.count)
+    print(featureDays)
+    print(pastDays.count)
+    print(pastDays)
+}
+
+ddd(count: (one: 10, two: 2),
+    reference: (one: (over: 8, under: 2), two: (over: 1, under: 1)),
+    referenceDateString: referenceDateString)
 
 
 
