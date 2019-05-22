@@ -1,0 +1,47 @@
+finalが付いているやつはwidgetsのサブクラス（subView的なやつ）
+
+WidgetがViewクラス的な扱い
+例：StatefulWidget
+
+setStateの中で値を代入しないと、変更が効かないらしい（メソッドの中のsetStateの中で）
+
+void _incrementCounter() {
+setState(
+(
+// ここでいじる
+));
+}
+
+以下のメソッドはsetStateが呼ばれると呼ばれるらしい
+Overfideなので、Widgetクラスのライフサイクル的なやつか?
+setStateした内容によって、必要なサブクラス(subViewのみ更新してくれる)
+ @override
+  Widget build(BuildContext context) {
+
+}
+
+buildメソッドの中ではそれぞれ決まったコンポーネントが、class側で用意されたサブクラスを参照して画面表示に使う
+完全に受け身な役割（用意したものを読みにいくだけ）
+
+
+クラスのinit
+MyHomePage({Key key, this.title}) : super(key: key);
+
+呼び出し側（init時にtitleをDIする感じ）
+MyHomePage(title: 'Flutter Demo Home Page')
+
+
+画面の構成要素
+
+appBar: ナビバー的な部分
+body: UIView的な部分
+その子コンポーネントとして、childがあってそのchildの種類によって各種レイアウトが表現できるっぽい
+Column: 中に書いたviewを縦に並べる、中の要素のサイズでColumnのサイズが決まる
+
+ボタンとかコードで作るときは最後にカンマをつける（ビルド時の効率のため?）
+ floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: Icon(Icons.add),
+      ), // これ
+
