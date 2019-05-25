@@ -1,3 +1,18 @@
+View(Widget)はサブクラスを呼ぶ時は以下で定義する
+class クラス名 extends State<親View>
+
+
+画面サイズの取得（build時）
+ Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    return Center(child: Container(width: width, height: height, color: Colors.blue,),);
+  }
+
+定数の書き方
+const 定数名 = 値
+const _padding = Edge.all(16.0); 
+
 finalが付いているやつはwidgetsのサブクラス（subView的なやつ）
 
 WidgetがViewクラス的な扱い
