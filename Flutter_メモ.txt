@@ -1,3 +1,73 @@
+// Propaty
+  final String name;
+  final ColorSwatch color;
+  final IconData iconLocation;
+
+  // nonNullのイニシャライズ
+  const Category({
+    Key key,
+    @required this.name,
+    @required this.color,
+    @required this.iconLocation,
+  })  : assert(name != null),
+        assert(color != null),
+        assert(iconLocation != null),
+        super(key: key);
+
+これつけるとnullチェックしない
+@required
+
+タップ属性を持たせる
+InkWell
+
+アプリの音量を調整したい
+Slider
+
+ユーザーに効率的にスクロールさせたい写真が多数あります
+GridView
+
+私はフォームを作成していて、リストからユーザーが聴くすべての種類の音楽を選択するようにしています
+Checkbox
+
+ユーザーにリストから誕生日の月を選択させたい
+Dropdown
+
+私は自分のアプリの画面をオーバーレイする素敵な半透明のライトボックスを作りたいです。
+Opacity
+
+私がしたいのは、この画像を画面の中央に配置することだけです。
+Center
+
+私は3つのコンテナを持っています、そしてそれらが常にスクリーンの3分の1を占めるようにしたいです。
+Flex
+
+送信ボタンを常に画面の右上に配置したいです。
+Align
+
+私は私のアプリの一番下に、ページ上の他のウィジェットの「上に」置いて、常に表示されるスティッキーフッターが欲しいのです。
+Stack
+
+左にスワイプしたときにウィジェットにアクションを実行させたい
+GestureDetector
+
+StatelessWidgetはimmutableなwidget、
+finalの後に作られる
+
+ナビバーのクラス
+MaterialApp
+
+ MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(title: 'Flutter Sample') // これが多分親のView
+    );
+
+文字のサイズ変える
+style: Theme.of(context).textTheme.display1
+
+
 View(Widget)はサブクラスを呼ぶ時は以下で定義する
 class クラス名 extends State<親View>
 
@@ -11,7 +81,7 @@ class クラス名 extends State<親View>
 
 定数の書き方
 const 定数名 = 値
-const _padding = Edge.all(16.0); 
+const _padding = EdgeInsets.all(16.0);
 
 finalが付いているやつはwidgetsのサブクラス（subView的なやつ）
 
