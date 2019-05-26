@@ -1,3 +1,13 @@
+for文
+３回Categoryクラスをinitしてcategoriesに詰めている
+for (var i = 0; i < 3; i++) {
+      categories.add(Category(
+        name: _categoryNames[i],
+        color: _baseColors[i],
+        iconLocation: Icons.cake,
+      ));
+    }
+
 // Propaty
   final String name;
   final ColorSwatch color;
