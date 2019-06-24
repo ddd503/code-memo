@@ -1,0 +1,73 @@
+RxTest関連
+
+手順を数値で指定できる
+let scheduler = TestScheduler(initialClock: 0)
+
+1秒ごとに順に入力させている
+let observable = scheduler.createHotObservable([
+            Recorded.next(1, "R"),
+            Recorded.next(2, "Rx"),
+            Recorded.next(3, "RxS"),
+            Recorded.next(4, "RxSw"),
+            Recorded.next(5, "RxSwi"),
+            Recorded.next(6, "RxSwift")
+            ])
+
+// 生成した手順をスタートする
+scheduler.start()
+
+printしてみる
+
+_ = observable.subscribe(onNext: {
+            print($0)
+        })
+
+結果
+R
+Rx
+RxS
+RxSw
+RxSwi
+RxSwift
+
+
+debounceは指定の時間の間の処理を無視してくれる（TestSchedulerを用意して時間を測らせる）
+
+func test_debounce() {
+        let scheduler = TestScheduler(initialClock: 0)
+        // 1秒ごとの手順を指定
+        let observable = scheduler.createHotObservable([
+            Recorded.next(1, "R"),
+            Recorded.next(2, "Rx"),
+            Recorded.next(3, "RxS"),
+            Recorded.next(4, "RxSw"),
+            Recorded.next(5, "RxSwi"),
+            Recorded.next(6, "RxSwift")
+            ])
+
+        // 1秒以内変化は無視する条件付きでprint（結果、6番目の手順まで1秒以内の処理なので無視され、「RxSwift」しか出ない）
+        _ = observable
+            .debounce(.seconds(1), scheduler: scheduler)
+            .subscribe(onNext: {
+                print("onNext:", $0)
+            })
+
+        // 結果は「RxSwift」のみ
+        scheduler.start()
+    }
+
+
+
+ストリーム（処理の流れ、監視）に対するオペレーター（処理条件を加える filterとか）がいる
+
+オペレーター
+orEmpty・・・nilが来たら空文字(非オプショナル)を入れてくれる
+
+asObservable()・・・監視対象として確定
+
+オペレーターとして使うには、戻り値がobservable属性を持ってないとだめ
+つまり監視対象型の属性にしないとrxでは扱ってくれない（宣言的に書くゆえに型を把握しておきたいから）
+どうするか　→ 一番単純なのは
+
+.justで囲む　→  .just(10)
+戻り値の書き方　＝　Observable<Int>

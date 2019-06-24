@@ -1,3 +1,16 @@
+
+定数で配列を定義（文字列型）
+static const _categoryNames = <String>[
+    'Length',
+    'Area',
+    'Volume',
+    'Mass',
+    'Time',
+    'Digital Storage',
+    'Energy',
+    'Currency',
+  ];
+
 for文
 ３回Categoryクラスをinitしてcategoriesに詰めている
 for (var i = 0; i < 3; i++) {

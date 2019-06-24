@@ -1,5 +1,22 @@
 Swift コードメモ
 
+クロージャーで同じスレッドなのに、非同期っぽくなんか返すタイミングで迷ったら、returnをハンドラーにしちゃう
+
+キーボード入力側で入力不可能な文字列が入っていないか trueなら入っている
+username.rangeOfCharacter(from: CharacterSet.alphanumerics.inverted) != nil 
+
+init内でselfを使う時はsuper.init()を呼んだ後で！
+
+カスタムトランジションの画像のaspect値気をつける
+
+         statusbarのisHidden状態を反映
+        presenting.view.layoutSubviews()
+
+
+// 遷移元のイメージビューのスクショを撮る
+        let snapshot = fromVC.imageView.snapshotView(afterScreenUpdates: false)
+        // 遷移元のイメージビューのフレームを取得
+        snapshot?.frame = CGRect(x: 0, y: 0, width: fromVC.imageView.frame.width, height: fromVC.imageView.frame.height)
 
 extension CollectionViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
