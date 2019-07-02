@@ -71,3 +71,45 @@ asObservable()・・・監視対象として確定
 
 .justで囲む　→  .just(10)
 戻り値の書き方　＝　Observable<Int>
+
+observable（監視される変数型）を作るときはletで良い（値の変化を購読するからnewではない）
+let signupEnabled: Observable<Bool>
+
+ui系を監視するときはbindを使う
+
+validatedUsername(enum)の結果によってラベルの表示変える
+
+bindのルール
+同じ型にする（型通しが同じならbindで受け渡し可能！！）
+・validatedUsername: 型 ＝　bind(to: 型)
+
+viewModel.validatedUsername
+            .bind(to: usernameValidationOutlet.rx.validationResult)
+            .disposed(by: disposeBag)
+
+// enumの結果をラベルに伝える
+extension Reactive where Base: UILabel {
+    var validationResult: Binder<ValidationResult> {
+        return Binder(base) { label, result in
+            label.textColor = result.textColor
+            label.text = result.description
+        }
+    }
+}
+
+
+複数箇所から購読（subscribe）されるときはhot coolに気をつける
+.share(replay: 1)でhotにする
+
+coolだと一度の購読で複数箇所に情報を渡せない
+複数分購読する
+
+driver はUI用のobserver
+・mainスレッドでレスポンスくる
+・エラーは届かない
+が確約
+
+UI系のプロパティのobserveはdriver
+
+hot ・・・保持する（購読対象が複数の場合はキャッシュを読んでくれるイメージ）
+cold・・・保持しない（キャッシュを読んではダメなとき、ボタンのタップイベントとか結果自体を保持してはダメ）

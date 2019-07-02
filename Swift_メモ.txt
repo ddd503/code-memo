@@ -1,5 +1,27 @@
 Swift コードメモ
 
+AVFoundation
+
+
+   向きを固定ではなく、画面の向きに合わせて変化させたいときは、
+        if let connection = layer.connection, connection.isVideoOrientationSupported,
+
+            let orientation = AVCaptureVideoOrientation(rawValue: UIApplication.shared.statusBarOrientation.rawValue) {
+            connection.videoOrientation = orientation
+
+        }
+
+
+  // AVCaptureMetadataOutputを用意（かめらViewで撮った画像をメタデータとして受け取るときに必要）
+        let metadataOutput = AVCaptureMetadataOutput()
+        guard captureSession.canAddOutput(metadataOutput) else { return }
+        // セッションにセットして効果をはっき
+        captureSession.addOutput(metadataOutput)
+        metadataOutput.setMetadataObjectsDelegate(self, queue: .main)
+        metadataOutput.metadataObjectTypes = viewModel.outputs.metadataObjectTypes
+
+
+
 クロージャーで同じスレッドなのに、非同期っぽくなんか返すタイミングで迷ったら、returnをハンドラーにしちゃう
 
 キーボード入力側で入力不可能な文字列が入っていないか trueなら入っている
