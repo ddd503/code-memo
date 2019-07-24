@@ -1,4 +1,30 @@
-RxTest関連
+ // AVCaptureSessionのisRunningをobservable（監視できる形）にする拡張
+extension Reactive where Base: AVCaptureSession {
+    var isRunning: Observable<Bool> {
+        return observe(Bool.self, #keyPath(AVCaptureSession.isRunning))
+            .flatMap { $0.flatMap { Observable.just($0) } ?? .empty() }
+    }
+}
+
+
+
+// errorのときにデフォルト値を返す
+.flatMap { value -> Observable<Int> in
+    return Observable<Int>.error(NSError())
+        .catchErrorJustReturn(1)
+}
+
+// errorのときに無視する
+.flatMap { value -> Observable<Int> in
+    return Observable<Int>.error(NSError())
+        .catchError { error in
+            return error
+                .flatMap { _ inObservable<Int>.empty() }
+        }
+}
+
+1回のonNext(value)の直後にonCompletedを発行します
+Observable.just(1)
 
 手順を数値で指定できる
 let scheduler = TestScheduler(initialClock: 0)
@@ -113,3 +139,13 @@ UI系のプロパティのobserveはdriver
 
 hot ・・・保持する（購読対象が複数の場合はキャッシュを読んでくれるイメージ）
 cold・・・保持しない（キャッシュを読んではダメなとき、ボタンのタップイベントとか結果自体を保持してはダメ）
+
+長押しを購読
+ let signinLongpress = signinButton.rx.controlEvent([.touchDown])
+    signinLongpress
+        .flatMapLatest { _ in
+            Observable<Int64>.interval(3, scheduler: MainScheduler.instance)
+                .take(1)
+        }
+        .subscribe(onNext:{ _ in print("do fun stuff only once when longpress detected")})
+        .disposed(by: disposeBag)

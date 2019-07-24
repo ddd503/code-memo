@@ -1,5 +1,31 @@
 Swift コードメモ
 
+core data entity作成　エラー
+used twice
+https://stackoverflow.com/questions/38190360/duplicate-files-in-deriveddata-folder-using-coredata-generator
+
+animationはcurveEaseInが自然な動きoutは不自然
+
+配列の前から任意の個数取り出す
+let points = displayButtons.enumerated().compactMap { $0.offset < maxButtonCount ? $0.element : nil}
+
+
+
+
+任意の四辺に枠線をつける（どの辺かだけもいける）
+let outline = CALayer()
+        outline.frame = CGRect(origin: .zero, size: wordView.frame.size)
+        outline.borderWidth = 2.0
+        outline.borderColor = UIColor.red.cgColor
+view.layer.addSublayer(outline)
+
+四辺全てならCALayerを作らなくてもいい（親のlayerをいじるか、作ったlayerを乗せるかの違い）
+
+
+変形で0にしたら、消さないと他に影響ある
+testView.transform = CGAffineTransform(scaleX: 0.0, y: 0.0)
+testView.alpha = 0
+
 AVFoundation
 
 
@@ -20,6 +46,9 @@ AVFoundation
         metadataOutput.setMetadataObjectsDelegate(self, queue: .main)
         metadataOutput.metadataObjectTypes = viewModel.outputs.metadataObjectTypes
 
+
+  // 最高の解像度を返すにはDeviceのhighResolutionStillImageDimensionsを設定する必要あり
+//        settings.isHighResolutionPhotoEnabled = true
 
 
 クロージャーで同じスレッドなのに、非同期っぽくなんか返すタイミングで迷ったら、returnをハンドラーにしちゃう
@@ -257,6 +286,9 @@ private func isPresentedDetailQRCodeView() -> Bool {
 
 親以外のViewからみた座標を取得する（中心座標など）
 親View.convert(座標を取得したい子View, to: 親View以外のView（このViewからみた座標）)
+（super→view1→subview）でsubviewの座標を決めるときは
+view.convert(subviewのframe, to: view1)
+
 
 viewの中のcardViewの座標を取得（親から見ないと正確な位置が取れない）
 view.convert(cardView.frame, to: view).width
