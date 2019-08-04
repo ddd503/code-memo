@@ -1,5 +1,130 @@
 Swift コードメモ
 
+UITableViewの特定のセルを選択不可にする
+この設定にはいくつかパターンがある。
+
+Storyboard上ではUITableViewCellのSelectionの項目をNoneにする。
+
+
+
+
+                // 三角部分の色
+                context.setFillColor(color.cgColor)
+        
+                // 三角形の各頂点を取得
+                let cornerPoints = directionType.triangleCornerPoints(superViewRect: rect,
+                                                                      triangleBottomLength: triangleBottomLength,
+                                                                      triangleHeight: triangleHeight)
+                // 開始点を指定
+                context.move(to: cornerPoints.top)
+                // 移動点から二点以上指定して線を引かないと領域の確保がされずに短形は描画されない
+                context.addLine(to: cornerPoints.left)
+                context.addLine(to: cornerPoints.right)
+                // 描画開始
+                context.fillPath()
+
+
+
+吹き出しの三角形部分を描画する
+
+// 三角形の各頂点を取得
+        let cornerPoints = directionType.triangleCornerPoints(superViewRect: rect,
+                                                              triangleBottomLength: triangleBottomLength,
+                                                              triangleHeight: triangleHeight)
+  // 三角形の描画
+        let triangle = UIBezierPath()
+        triangle.move(to: cornerPoints.left)
+        triangle.addLine(to: cornerPoints.top)
+        triangle.addLine(to: cornerPoints.right)
+        triangle.close()
+        // 内側の色をセット
+        color.setFill()
+        // 内側を塗りつぶす
+        triangle.fill()
+        // 線の色をセット
+        borderLineColor.setStroke()
+        // 線の太さをセット
+        triangle.lineWidth = borderLineWidth
+        // 枠線を引く
+        triangle.stroke()
+
+
+innerViewからみたinnerViewのcenter（innnerのcenterに配置したかったから）
+ self.convert(innerView.center, to: innerView)
+
+
+override func draw(_ rect: CGRect)
+ではrectが確定予定、frameはまだ変わってない
+
+collectionViewのレイアウト（横2縦たくさんの間10間隔）
+private let spacing: CGFloat = 10
+    private lazy var insetForSection: () -> (UIEdgeInsets?) = { [weak self] in
+        guard let self = self else { return nil }
+        let inset = self.spacing * 2
+        return UIEdgeInsets(top: self.spacing * 2, left: self.spacing * 2, bottom: 0, right: self.spacing * 2)
+    }
+    private lazy var cellSize: () -> (CGSize?) = { [weak self] in
+        guard let self = self else { return nil }
+        let collectonViewSize = self.memoListView.frame.size
+        return CGSize(width: collectonViewSize.width / 2 - self.spacing * 3,
+                      height: collectonViewSize.height / 10)
+    }
+
+extension MemoListViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return cellSize() ?? .zero
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return insetForSection() ?? .zero
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return spacing * 2
+    }
+}
+
+
+
+
+
+レイヤー、角丸
+layer.masksToBounds
+layer.cornerRadius
+
+
+ナビバーのスタイルを変える（色は自由にできないが、ステータスバーの色まで調整してくれる）
+navigationController.navigationBar.barStyle = .black
+
+ナビバーの色を変える
+navigationController.navigationBar.barTintColor = .black
+
+ // UIImageへの変換
+    var image: UIImage {
+        let renderer = UIGraphicsImageRenderer(bounds: bounds)
+        return renderer.image { rendererContext in
+            layer.render(in: rendererContext.cgContext)
+        }
+    }
+
+
+extension UIView {
+    // UIImageへの変換（スクリーンショット）
+    func snapImage() -> UIImage? {
+        defer { UIGraphicsEndImageContext() }
+        UIGraphicsBeginImageContextWithOptions(frame.size, true, 0.0)
+        guard let context = UIGraphicsGetCurrentContext() else { return  nil }
+        layer.render(in: context)
+        return UIGraphicsGetImageFromCurrentImageContext()
+    }
+}
+
+
+
+coredataの検索条件（predicate）
+
+ // isHiddenがtrueでないもののみ取得（削除していないもの）
+let predicate = NSPredicate(format: "isHidden != %@", NSNumber(booleanLiteral: true))
+fetchRequest.predicate = predicate
+
 core data entity作成　エラー
 used twice
 https://stackoverflow.com/questions/38190360/duplicate-files-in-deriveddata-folder-using-coredata-generator
@@ -732,7 +857,9 @@ reloadView.frame.size.height = isHidden ? 0 : 50
         return Bundle.main.path(forResource: fileName, ofType: "json")
     }
 
-/// TestProjectに置いてあるlacalのjsonファイルのpathを取得
+
+
+/// TestProjectに置いてあるlacalのjsonファイルのpathを取得（json自体のmembershipで本環境の方を許可する）
     ///
     /// - Parameter fileName: ファイル名
     /// - Returns: jsonファイルのpath(失敗の場合はnil)

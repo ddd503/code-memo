@@ -4,7 +4,7 @@
       "textAnnotations": [
         {
           "locale": "en",
-          "description": "ing))\n",
+          "description": "テストテストテスト",
           "boundingPoly": {
             "vertices": [
               {
@@ -27,7 +27,7 @@
           }
         },
         {
-          "description": "ing))",
+          "description": "テストテストテスト",
           "boundingPoly": {
             "vertices": [
               {
@@ -317,7 +317,7 @@
             ]
           }
         ],
-        "text": "ing))\n"
+        "text": "テストテストテスト"
       }
     }
   ]
