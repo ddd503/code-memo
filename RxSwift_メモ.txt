@@ -1,4 +1,25 @@
- // AVCaptureSessionのisRunningをobservable（監視できる形）にする拡張
+ 
+通知系の購読登録
+NotificationCenter.default.rx.notification(.AVCaptureSessionDidStartRunning)
+            .subscribe(onNext: { [weak self] (_) in
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    self.buttonAreaView.setViewState(.shoot)
+                }
+            }).disposed(by: disposeBag)
+
+        NotificationCenter.default.rx.notification(.NSManagedObjectContextDidSave)
+            .subscribe(onNext: { [weak self] (_) in
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    // TODO: インジケータストップ
+                    self.dismiss(animated: true)
+                }
+            }).disposed(by: disposeBag)
+
+
+
+// AVCaptureSessionのisRunningをobservable（監視できる形）にする拡張
 extension Reactive where Base: AVCaptureSession {
     var isRunning: Observable<Bool> {
         return observe(Bool.self, #keyPath(AVCaptureSession.isRunning))

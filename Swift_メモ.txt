@@ -1,5 +1,22 @@
 Swift コードメモ
 
+initWithCoderとawakeFromNibの違い
+initWithCoderでは、IBOutletやIBActionはロードされていない、awakeFromNibはロードされた後に呼び出される
+
+photosのfetchは基本同期的なメソッド
+
+PHAssetのenumerateObjects
+並列で行うには、引数のoptionsに「並列」concurrentなどの指定を入れる
+
+
+ナビバーの左上に戻るボタン
+let leftBarButton = UIBarButtonItem(title: "閉じる", style: .plain, target: self, action: #selector(dismiss(sender:)))
+        navigationItem.leftBarButtonItem = leftBarButton
+
+@objc func dismiss(sender: UIBarButtonItem) {
+        dismiss(animated: true, completion: nil)
+    }
+
 UITableViewの特定のセルを選択不可にする
 この設定にはいくつかパターンがある。
 
@@ -1786,6 +1803,23 @@ DispatchQueue.global(qos: .default).async {
         notification.addObserver(self, selector: #selector(self.keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         notification.addObserver(self, selector: #selector(self.keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
+
+
+キーボードをあげる処理
+ guard let self = self,
+                    let rect = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue,
+                    let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else {
+                        return
+                }
+
+                UIView.animate(withDuration: duration,
+                               animations: { () in
+                                // 画面をキーボード分あげる
+                                let transform = CGAffineTransform(translationX: 0, y: -(rect.size.height))
+                                self.view.transform = transform
+
+                })
+
 
 
 /// キーボードが表示されたときの処理
