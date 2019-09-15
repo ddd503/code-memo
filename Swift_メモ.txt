@@ -1,5 +1,488 @@
 Swift コードメモ
 
+上だけ枠線つける
+        let borderLayer = CALayer()
+        borderLayer.frame = CGRect(origin: .zero, size: CGSize(width: actionsView.frame.width, height: 0.1))
+        borderLayer.backgroundColor = UIColor.lightGray.cgColor
+        actionsView.layer.addSublayer(borderLayer)
+
+
+画面全体以外のパターンでNVActivityIndicatorViewを使う時、ラベルとか自前で作った方がやりやすい
+
+  private func setupIndicatorView() {
+        indicatorView = NVActivityIndicatorView(frame: CGRect(origin: .zero, size: CGSize(width: 60, height: 60)))
+        indicatorBaseView.addSubview(indicatorView)
+        indicatorMessageLabel = UILabel(frame: .zero)
+        indicatorMessageLabel.textAlignment = .center
+        indicatorMessageLabel.font = .systemFont(ofSize: 15)
+        indicatorMessageLabel.textColor = .white
+        indicatorBaseView.addSubview(indicatorMessageLabel)
+    }
+
+///viewDidLayoutSubviews で
+    private func adjustIndicatorPosition() {
+        guard let image = materialImageView.image else { return }
+        indicatorBaseView.frame = image.aspectFitFrame(imageView: materialImageView)
+        let indicatorBaseViewCenter = indicatorBaseView.superview!.convert(indicatorBaseView.center, to: indicatorBaseView)
+        indicatorView.center = indicatorBaseViewCenter
+        indicatorMessageLabel.frame.size = CGSize(width: indicatorBaseView.frame.width * 0.7, height: 30)
+        indicatorMessageLabel.center.x = indicatorBaseViewCenter.x
+        indicatorMessageLabel.center.y = indicatorView.frame.maxY + 20
+    }
+
+
+
+storyboard側で作ったcustomViewをセットしたい（オーナーを自身でsubクラスは変えない）
+final class ShutterButtonView: UIView {
+
+    @IBOutlet weak private var shutterButton: UIButton!
+
+    private var action: (() -> ())?
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        let view = UINib(nibName: "ShutterButtonView", bundle: nil).instantiate(withOwner: self, options: nil).first as! UIView
+        addSubview(view)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        shutterButton.layer.masksToBounds = true
+        shutterButton.layer.cornerRadius = shutterButton.bounds.width / 2
+        shutterButton.setupTapAnimation()
+        layer.masksToBounds = true
+        layer.cornerRadius = bounds.width / 2
+        layer.borderColor = shutterButton.backgroundColor?.cgColor
+        layer.borderWidth = 6
+        layoutIfNeeded()
+    }
+
+    @IBAction func didTapShutterButton(_ sender: UIButton) {
+        action?()
+    }
+
+    func setButtonAction(action: @escaping () -> ()) {
+        self.action = action
+    }
+}
+
+
+xibでuiview作る（IB側のsuperViewのクラスをカスタムクラスにする、オーナーではない）
+import UIKit
+
+final class CanNotStartView: UIView {
+
+    static func make(frame: CGRect) -> CanNotStartView {
+        let view = UINib(nibName: "CanNotStartView", bundle: nil).instantiate(withOwner: nil, options: nil).first as! CanNotStartView
+        view.frame = frame
+        return view
+    }
+
+}
+
+
+XcodeProjectテンプレートの作り方
+https://www.google.co.jp/search?q=xcode+project+template&oq=xcode+project+template&aqs=chrome..69i57j0l5.12503j0j7&sourceid=chrome&ie=UTF-8
+
+
+ /// キーボードが出た時にタップ位置が隠れるかどうか
+    ///
+    /// - Parameters:
+    ///   - keyboardSize: キーボードのサイズ
+    ///   - completion: 隠れるかどうか & 隠れた部分の長さ
+    func isHiddenSelectPosition(keyboardSize: CGSize, completion: @escaping (_ isHedden: Bool, _ hiddenLength: CGFloat) -> ()) {
+        let limit = UIScreen.main.bounds.height - keyboardSize.height
+        currentCaretBottomY { (float) in
+            let isHedden = float > limit
+            let hiddenLength = float - limit
+            completion(isHedden, hiddenLength)
+        }
+    }
+
+ /// caretのbottomのY座標を取得する
+    ///
+    /// textViewDidBeginEditingで呼び出す
+    func currentCaretBottomY(completion: @escaping (CGFloat) -> ()) {
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.1) {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self, let selectedRange = self.selectedTextRange else { return }
+                let caretRect = self.caretRect(for: selectedRange.start)
+                let caretRectInWindow = self.convert(caretRect, to: nil)
+                let caretBottomY = caretRectInWindow.origin.y + caretRectInWindow.size.height
+                completion(caretBottomY)
+            }
+        }
+    }
+
+// TextViewの余白部分を取り除く
+let textView = UITextView(frame: view.bounds)
+textView.textContinerInset = UIEdgeInsetsZero
+textView.textContiner.lineFragmentPadding = 0
+textView.layoutManager.useFontLeading = false
+textView.sizeToFit()
+
+ // 描画サイズを得る（useFontLeading抜き）
+        let text = "ddd"
+        let boundingRect = NSString(string: text).boundingRect(with: ラベルのcgsize,
+                                                               options: [.usesLineFragmentOrigin],
+                                                               attributes: [NSAttributeName: font],
+                                                               context: nil)
+
+// 描画サイズを得る（useFontLeading込み）
+        let text = "ddd"
+        let boundingRect = NSString(string: text).boundingRect(with: ラベルのcgsize,
+                                                               options: [.usesLineFragmentOrigin, .UsesFontLeading],
+                                                               attributes: [NSAttributeName: font],
+                                                               context: nil)
+
+
+CustomのViewクラス実装
+import UIKit
+
+class NotFoundWeatherInfoView: UIView {
+    
+    let task: (() -> ())
+
+    init(frame: CGRect, task: @escaping () -> ()) {
+        self.task = task
+        super.init(frame: frame)
+        let customView = Bundle.main.loadNibNamed("NotFoundWeatherInfoView", owner: self, options: nil)!.first! as! UIView
+        addSubview(customView)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    @IBAction func didTapRequest(_ sender: UIButton) {
+        task()
+    }
+}
+
+
+アラートやアクションシートをカスタムしたい時
+UIPresentationController
+
+
+UIViewController縛りのextension
+extension TextViewKeyboardEventObservable where Self: UIViewController {}
+
+
+
+switch内のreturnはその上のクロージャも出てしまう
+
+カンマを３桁区切りでたす
+extension Double {
+    func addComma() -> String? {
+        let number = NSNumber(value: self)
+        let formatter = NumberFormatter()
+        formatter.numberStyle = NumberFormatter.Style.decimal
+        formatter.groupingSeparator = ","
+        formatter.groupingSize = 3
+        return formatter.string(from: number)
+    }
+}
+
+
+private extension Date {
+    var dateString: String {
+        let format = DateFormatter()
+        format.dateFormat = "yyyy-MM-dd" // 2019-09-07みたいな
+        return format.string(from: self)
+    }
+}
+
+
+TextViewのキャレット（選択しているところに出る縦棒）
+/// キャレットの高さ調整
+    override func caretRect(for position: UITextPosition) -> CGRect {
+        var superRect = super.caretRect(for: position)
+        guard let font = self.font else { return superRect }
+        // キャレットの高さをフォントに合わせる
+        superRect.size.height = font.pointSize - font.descender
+        return superRect
+    }
+
+
+
+CIImageの向きをUIImageに揃える。帰る
+
+extension CGImagePropertyOrientation {
+    init(_ orientation: UIImage.Orientation) {
+        switch orientation {
+        case .up:
+            self = .up
+        case .down:
+            self = .down
+        case .left:
+            self = .left
+        case .right:
+            self = .right
+        case .upMirrored:
+            self = .upMirrored
+        case .downMirrored:
+            self = .downMirrored
+        case .leftMirrored:
+            self = .leftMirrored
+        case .rightMirrored:
+            self = .rightMirrored
+        default:
+            self = .right
+        }
+    }
+}
+
+
+一番下までスクロールしているか
+private func isBottomScroll() -> Bool {
+        return contentSize.height <= (frame.height + contentOffset.y)
+    }
+
+
+func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if text.contains(UIPasteboard.general.string ?? "") {
+            print("コピペしたテキスト")
+        }
+        return true
+    }
+
+
+hugging: 伸びる
+resistance: 耐える
+
+extension String {
+    /// 1行目のテキスト
+    var firstLine: String {
+        let lines = components(separatedBy: "\n")
+        return lines.first ?? ""
+    }
+
+    /// 2行目以降のテキスト
+    var afterSecondLine: String {
+        var lines = components(separatedBy: "\n")
+        guard lines.count > 1 else { return "" }
+        // 1行目を削除
+        lines.remove(at: 0)
+        var text = lines.joined(separator: "\n")
+        // 文末の改行を削除する
+        text.removeLastIfNeeded(character: "\n", index: 1)
+        return text
+    }
+
+    /// 特定の文字列が語尾の場合に文末を削除する
+    ///
+    /// - Parameters:
+    ///   - character: この文字が語尾なら文末から文字列を削除する
+    ///   - index: 文末から何文字削除するか
+    mutating func removeLastIfNeeded(character: Character, index: Int) {
+        guard let lastCharacter = self.last, lastCharacter == character else { return }
+        removeLast(index)
+    }
+}
+
+
+coredata orの検索
+NSCompoundPredicate(orPredicateWithSubpredicates: [titlePredicate, contentsPredicate])
+
+
+/// 1行目のテキスト
+    var firstLine: String {
+        let lines = components(separatedBy: "\n")
+        return lines.first ?? ""
+    }
+
+    /// 2行目以降のテキスト
+    var afterSecondLine: String {
+        var lines = components(separatedBy: "\n")
+        guard lines.count > 1 else { return "" }
+        // 1行目を削除
+        lines.remove(at: 0)
+        var text = lines.joined(separator: "\n")
+        // 文末の改行を削除する
+        text.removeLastIfNeeded(character: "\n", index: 1)
+        return text
+    }
+
+    /// 特定の文字列が語尾の場合に文末を削除する
+    ///
+    /// - Parameters:
+    ///   - character: この文字が語尾なら文末から文字列を削除する
+    ///   - index: 文末から何文字削除するか
+    mutating func removeLastIfNeeded(character: Character, index: Int) {
+        guard let lastCharacter = self.last, lastCharacter == character else { return }
+        removeLast(index)
+    }
+
+
+
+navigationController?.presentはダメ
+
+初期値にselfを使いたいときはlazy
+ private let spacing: CGFloat = 20
+    private lazy var insetForSection: () -> (UIEdgeInsets?) = { [weak self] in
+        guard let self = self else { return nil }
+        return UIEdgeInsets(top: self.spacing, left: self.spacing, bottom: 0, right: self.spacing)
+    }
+    private lazy var cellSize: () -> (CGSize?) = { [weak self] in
+        guard let self = self else { return nil }
+        let collectonViewSize = self.memoListView.frame.size
+        return CGSize(width: collectonViewSize.width - self.spacing * 2,
+                      height: collectonViewSize.height / 9)
+    }
+
+
+インクリメントサーチ　リアルタイム検索
+ func searchBar(_ searchBar: UISearchBar, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.1) {
+            /*
+             文字入力許可後0.1秒後(入力許可後にsearchBar.textに文字が反映されている頃)に検索を開始する
+             replacementTextには入力が確定していないので変換等が曖昧になっている(i → い)
+             おそらくメインスレッドで呼ぶのが良い
+             */
+            DispatchQueue.main.async { [weak self] in
+                self?.searchMemos(searchString: searchBar.text ?? "")
+            }
+        }
+        return true
+    }
+
+
+UIAlertControllerは生成もメインスレッドで行う必要がある？(presentだけではなく)
+
+    // 指定したrect部分のみのImageを返す（表示先のImageViewのcontentModeがaspectFitの場合限定）
+    func croppingCaseAspectFit(rect: CGRect, imageView: UIImageView) -> UIImage? {
+        let imageaAspectFitSize = aspectFitSize(imageViewBounds: imageView.bounds)
+        let imageViewScale = max(imageaAspectFitSize.width * self.scale / imageView.frame.width,
+                                 imageaAspectFitSize.height * self.scale / imageView.frame.height)
+        let cropZone = CGRect(x: rect.origin.x * imageViewScale,
+                              y: rect.origin.y * imageViewScale,
+                              width: rect.size.width * imageViewScale,
+                              height: rect.size.height * imageViewScale)
+        guard let cgImage = self.cgImage, let cropImage = cgImage.cropping(to: cropZone) else {
+            return nil
+        }
+        return UIImage(cgImage: cropImage, scale: self.scale, orientation: self.imageOrientation)
+    }
+
+
+
+配列の結合　改行を挟んで
+let contents = sentenceArray.joined(separator: "\n")
+
+
+画像からメモを作る
+private func createMemo(selectedWordsRects: [CGRect], baseImageView: UIImageView) {
+
+        guard !selectedWordsRects.isEmpty else {
+            // TODO: 選択した文字列がなかった（本来はこの前の段階で潰す）
+            return
+        }
+
+        guard let hollowOutImageView = hollowOutImageView(rects: selectedWordsRects,
+                                                          imageView: baseImageView)  else {
+                                                            // TODO: 文字列の読み取りに失敗アラートを出してOKで再スタート
+                                                            return
+        }
+
+        guard let hollowOutImage = hollowOutImageView.image,
+            let materialData = hollowOutImage.jpegData(compressionQuality: 1.0) else {
+                // TODO: 文字列の読み取りに失敗アラートを出してOKで再スタート
+                return
+        }
+
+        // TODO: インジケータスタート
+
+        actionButtonAreaView.setViewState(.requestApi)
+        viewModel.shouldSaveMemo = true
+        
+        viewModel.visionAPIDataStore.requestOCR(imageDataEncodedString: materialData.base64EncodedString()) { (result) in
+
+            guard self.viewModel.shouldSaveMemo else { return }
+
+            switch result {
+            case .success(let jsonData):
+                do {
+                    let result = try JSONDecoder().decode(OCRResponse.self, from: jsonData)
+                    // 検出した文字列をメモとして保存
+                    result.responses.forEach({ [weak self] (annotateImageResponse) in
+                        guard let self = self, let context = annotateImageResponse.memo.managedObjectContext else { return }
+
+                        let memo = annotateImageResponse.memo
+                        print(memo.contents ?? "")
+                        // TODO: キャプチャのイメージデータをどのクラスで保持して、保存までつなげるか
+                        // TODO: - クルクル回す（保存完了待ち）
+                        self.viewModel.coreDataStore.save(context: context)
+                    })
+                } catch let error {
+                    // TODO: jsonのパースに失敗した場合の処理
+                    print(error.localizedDescription)
+                }
+            case .failure(let error):
+                // TODO: 文字列の読み取りに失敗アラートを出してOKで再スタート
+                print(error.localizedDescription)
+            }
+        }
+    }
+
+    /// ImageViewの指定の範囲を切り取って、白地Viewに貼って、その白地ViewのスクショをImageViewにして返す
+    private func hollowOutImageView(rects: [CGRect], imageView: UIImageView) -> UIImageView? {
+        guard let image = imageView.image else { return nil }
+
+        let baseView = UIView(frame: image.aspectFitFrame(imageView: imageView))
+        baseView.backgroundColor = .white
+
+        rects.forEach {
+            // baseViewから見た文字列の座標（imageViewではなくて）
+            let rect = imageView.convert($0, to: baseView)
+            guard let resizeImage = image.resize(baseView.frame.size),
+                let cropImage = resizeImage.croppingCaseAspectFit(rect: rect, imageView: imageView) else {
+                    return
+            }
+            let cropImageView = UIImageView(image: cropImage)
+            cropImageView.frame = rect
+            cropImageView.contentMode = imageView.contentMode
+            baseView.addSubview(cropImageView)
+        }
+
+        guard let snapImage = baseView.snapImage() else { return nil }
+
+        let imageView = UIImageView(image: snapImage)
+        imageView.frame = baseView.frame
+        imageView.contentMode = imageView.contentMode
+        return imageView
+    }
+
+
+
+辞書型はmapすると出力順序が逆
+
+経過時間
+基準日時からの経過時間・残り時間
+let calendar = Calendar.current
+let dateFrom = calendar.date(from: DateComponents(year: 2010, month: 6, day: 10))!
+let dateTo = calendar.date(from: DateComponents(year: 2011, month: 7, day: 11))!
+
+var comps: DateComponents
+
+// あと何秒か
+comps = calendar.dateComponents([.second], from: dateFrom, to: dateTo)
+print(comps.second!) // 34214400
+
+// あと何日か
+comps = calendar.dateComponents([.day], from: dateFrom, to: dateTo)
+print(comps.day!) // 396
+
+// あと何ヶ月と何日か
+comps = calendar.dateComponents([.month, .day], from: dateFrom, to: dateTo)
+print(comps.month!, comps.day!) // 13 1
+
+
+
+ // rootVCまでdismissで戻る
+        view.window?.rootViewController?.dismiss(animated: true, completion: nil)
+
+mutating は自身に変更が入る場合のfuncにつける必要がある（stringの拡張で自分の文字列を削除する場合など）
+
 initWithCoderとawakeFromNibの違い
 initWithCoderでは、IBOutletやIBActionはロードされていない、awakeFromNibはロードされた後に呼び出される
 
