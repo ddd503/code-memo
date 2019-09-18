@@ -1,5 +1,31 @@
 Swift コードメモ
 
+Double
+print(floor(decimal)) // 3.0 (切り捨て)
+print(ceil(decimal)) // 4.0 (切り上げ)
+print(round(decimal)) // 3.0 (四捨五入)
+
+マイグレーション設定
+   // 自動マイグレーション設定（デフォルトでtrueだからいらない？）
+        let description = NSPersistentStoreDescription()
+        description.shouldMigrateStoreAutomatically = true
+        description.shouldInferMappingModelAutomatically = true
+        container.persistentStoreDescriptions = [description]
+
+
+coredataのモデルが2つある問題
+
+新しいビルド-Xcode 10.1 codegenがManual / Noneに設定されていなかったため、デフォルトではありません。派生データを取り込みますが、これは機能とは思えません。
+
+ 
+
+動作が予想される場合でも、それはバグだと思います。通常のビルドが行われないようにします。codegenが変更されたときに選択されるプロセスを説明するドキュメントが見つかりません。
+
+ 
+
+Manual / Noneがデフォルトだと思います。
+
+
 上だけ枠線つける
         let borderLayer = CALayer()
         borderLayer.frame = CGRect(origin: .zero, size: CGSize(width: actionsView.frame.width, height: 0.1))
