@@ -1,5 +1,150 @@
 Swift コードメモ
 
+iOS13からpresentはハーフモーダルになった
+fullScreenでpresentしたい時は、みたいな感じ
+
+        cameraVC.modalPresentationStyle = .fullScreen
+そして、ハーフモーダルの場合は,戻った時にviewwillapperが走らない、fullなら走る
+
+Viewに影つける
+影の長さ、width = +: 右、-: 左、height: +: 下方向、=: 上方向
+ actionsView.layer.shadowOffset = CGSize(width: 0.0, height: -3.0)
+影の色
+actionsView.layer.shadowColor = UIColor.black.cgColor
+影の濃さ
+actionsView.layer.shadowOpacity = 0.2
+影のぼかし度、ぼければ長くなる
+actionsView.layer.shadowRadius = 8
+
+ディレイかけて出して
+    /// キャンセルボタンの非表示を切り替える
+    private func setHiddenCancelButton(isHidden: Bool) {
+        let delay: TimeInterval = isHidden ? 0.0 : 3.0
+        let duration: TimeInterval = isHidden ? 0.3 : 0.3
+        let alpha: CGFloat = isHidden ? 0.0 : 1.0
+        isHidden ? view.sendSubviewToBack(cancelButton) : view.bringSubviewToFront(cancelButton)
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+            UIView.animate(withDuration: duration, animations: {
+                self?.cancelButton.alpha = alpha
+            }, completion: { (_) in
+                self?.cancelButton.isEnabled = !isHidden
+            })
+        }
+    }
+
+
+/// フェードインで表示後にフェードアウトで消える
+    func fadeInToOut(fadeInDuration: TimeInterval, fadeOutDuration: TimeInterval, displayDuration: TimeInterval) {
+        let totalDuration = fadeInDuration + fadeOutDuration + displayDuration
+        let fadeInTime = TimeInterval(fadeInDuration / totalDuration)
+        let fadeOutTime = TimeInterval(fadeOutDuration / totalDuration)
+        UIView.animateKeyframes(withDuration: totalDuration, delay: 0.0, options: .init(), animations: { [weak self] in
+            guard let self = self else { return }
+            UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: fadeInTime, animations: {
+                self.alpha = 1.0
+            })
+            UIView.addKeyframe(withRelativeStartTime: 1.0 - fadeOutTime, relativeDuration: fadeOutTime, animations: {
+                self.alpha = 0.0
+            })
+        }) { [weak self] (_) in
+            self?.removeFromSuperview()
+        }
+    }
+
+照準でのsort配列
+sorted { $0.key < $1.key }
+
+UIImageViewのサブクラスでdrawが走らない
+1
+
+UIImageViewクラスは、ディスプレイに画像を描画するために最適化されています。UIImageViewは、そのサブクラスのdrawRect：メソッドを呼び出しません。サブクラスにカスタム描画コードを含める必要がある場合は、代わりにUIViewクラスをサブクラス化する必要があります。
+
+
+ private func setupPanGesture() {
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(didPan(panGesture:)))
+        materialImageView.addGestureRecognizer(panGesture)
+    }
+
+
+
+   /// Panアクションのハンドリング
+    @objc private func didPan(panGesture: UIPanGestureRecognizer) {
+        guard let panView = panGesture.view else { return }
+        let location = panGesture.location(in: panView)
+        switch panGesture.state {
+        case .began:
+            print(location)
+        case .changed:
+            print(location)
+        case .ended:
+            print(location)
+        default: break
+        }
+    }
+
+import UIKit
+
+extension UIScrollView {
+    /// 一番上までスクロールされているかどうか
+    ///
+    /// - Returns: Bool
+    func isScrollToTop() -> Bool {
+        return contentOffset.y <= 0
+    }
+
+    /// 一番上までスクロールする（なんか違っている！！！１１１）
+    ///
+    /// - Parameter animated: アニメーションをさせるか
+    func scrollToTop(animated: Bool) {
+        setContentOffset(CGPoint(x: 0, y: -(contentInset.top + adjustedContentInset.top)), animated: animated)
+    }
+
+    /// 一番下までスクロールする
+    ///
+    /// - Parameter animated: アニメーションをさせるか
+    func scrollToBottom(animated: Bool) {
+        setContentOffset(CGPoint(x: 0, y: contentSize.height - frame.height), animated: animated)
+    }
+}
+
+
+coredata リレーションまたぎのfetch
+NSPredicate(format: "personRel.idPerson == %@", person.idPerson)
+
+collectionviewの横スクロールでsafeareaが邪魔する時
+https://qiita.com/kazuhiro4949/items/1b362c3d987bda479490
+
+
+// 渡したタスクをメインスレッドで実行する（パフォーマンスを考慮し、もともとメインの場合はスレッド操作は行わない）
+    func executionMainThread(_ task: @escaping () -> ()) {
+        if Thread.isMainThread {
+            task()
+        } else {
+            DispatchQueue.main.async {
+                task()
+            }
+        }
+    }
+
+「画面がタップされた時にそのPointを取得し、それが所定のRectの中に入っているかどうかを判定したい」という場合は~=演算子を次のようにオーバーロードします。
+
+func ~= (rect:CGRect, point:CGPoint) -> Bool
+{
+    return ((rect.minX...rect.minX + rect.width) ~= point.x) && ((rect.minY...rect.minY + rect.height) ~= point.y)
+}
+使う時はこんなかんじ。
+
+let point = (タップしたpoint)
+let rect = (所定のrect)
+switch point {
+case rect:
+    print("rectの中だよ！")
+default:
+    print("rectの外だよ！")
+}
+
+
+
 Double
 print(floor(decimal)) // 3.0 (切り捨て)
 print(ceil(decimal)) // 4.0 (切り上げ)
@@ -140,7 +285,7 @@ https://www.google.co.jp/search?q=xcode+project+template&oq=xcode+project+templa
         }
     }
 
-// TextViewの余白部分を取り除く
+// TextViewの余白部分を取り除く　スペース　空白
 let textView = UITextView(frame: view.bounds)
 textView.textContinerInset = UIEdgeInsetsZero
 textView.textContiner.lineFragmentPadding = 0
@@ -612,7 +757,7 @@ extension MemoListViewController: UICollectionViewDelegateFlowLayout {
 
 
 
-レイヤー、角丸
+レイヤー、角丸、丸角
 layer.masksToBounds
 layer.cornerRadius
 

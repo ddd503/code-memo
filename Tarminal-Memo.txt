@@ -237,3 +237,21 @@ git remote -v
 リモートの向先を変更
 git remote set-url origin 新しいURL（向先）
 
+
+git log
+
+コミットログ表示
+--merges
+
+マージされたコミットだけに限定
+--since=6am
+
+今日朝6時からのコミットだけに限定
+--first-parent
+
+開発ブランチのコミットだけに限定
+≒ プルリクエストによりマージされたコミットだけに限定
+--reverse
+
+逆順 (マージされ
+
