@@ -1,5 +1,54 @@
 Swift コードメモ
 
+Entityの削除
+private func deleteAll() {
+        let context = CoreDataDummyPropaties.shared.persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Memo")
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+
+        do {
+            try context.execute(deleteRequest)
+        } catch let error as NSError {
+            print("error: \(error.localizedDescription)")
+        }
+    }
+
+Alamofire 5.0以降（AFになる）
+import Alamofire
+
+enum APIRequestError: Error {
+    case offline
+}
+
+final class APIClient {
+    static func request(option: URLRequestConvertible, completionHandler: @escaping (Result<Data, Error>) -> ()) {
+        guard onLineNetwork() else {
+            completionHandler(.failure(APIRequestError.offline))
+            return
+        }
+
+        AF.request(option).responseData { (responseData) in
+            switch responseData.result {
+            case .success(let data):
+                completionHandler(.success(data))
+            case .failure(let error):
+                completionHandler(.failure(error))
+            }
+        }
+    }
+
+    static func onLineNetwork() -> Bool {
+        if let reachabilityManager = NetworkReachabilityManager() {
+            reachabilityManager.startListening()
+            return reachabilityManager.isReachable
+        }
+        return false
+    }
+}
+
+
+
+
 iOS13からpresentはハーフモーダルになった
 fullScreenでpresentしたい時は、みたいな感じ
 
