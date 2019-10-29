@@ -1,4 +1,9 @@
 Swift コードメモ
+非同期にcoredata処理実行
+context.perform {
+            <#code#>
+        }
+
 
 Entityの削除
 private func deleteAll() {
