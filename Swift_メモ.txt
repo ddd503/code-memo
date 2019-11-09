@@ -1,4 +1,28 @@
 Swift コードメモ
+
+システムによるstatusbarの最適化による色変更を無効
+View controller-based status bar appearanceをNO
+
+
+/// iOS13以降のナビゲーションバーのレイアウト調整（didFinishLaunchingWithOptionsで呼ぶ）
+    func setupNavigationBarLayoutForiOS13(backgroundColor: UIColor, titleColor: UIColor, largeTitleColor: UIColor) {
+        // iOS13専用
+        let coloredAppearance = UINavigationBarAppearance()
+        coloredAppearance.configureWithOpaqueBackground()
+        // 背景
+        coloredAppearance.backgroundColor = backgroundColor
+        // 通常時の属性
+        coloredAppearance.titleTextAttributes = [.foregroundColor: titleColor]
+        // largetitle時の属性
+        coloredAppearance.largeTitleTextAttributes = [.foregroundColor: largeTitleColor]
+
+        // 通常のナビバーの見た目
+        UINavigationBar.appearance().standardAppearance = coloredAppearance
+        // largeTitle等でナビバーが伸びた時の見た目
+        UINavigationBar.appearance().scrollEdgeAppearance = coloredAppearance
+    }
+
+
 非同期にcoredata処理実行
 context.perform {
             <#code#>
@@ -542,6 +566,7 @@ NSCompoundPredicate(orPredicateWithSubpredicates: [titlePredicate, contentsPredi
 
 navigationController?.presentはダメ
 
+lazyつけるとこはinitの時点で値が確定できない時
 初期値にselfを使いたいときはlazy
  private let spacing: CGFloat = 20
     private lazy var insetForSection: () -> (UIEdgeInsets?) = { [weak self] in
