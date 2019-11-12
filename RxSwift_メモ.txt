@@ -1,3 +1,135 @@
+let disposeBag = DisposeBag()
+
+let button = PublishSubject<Void>()
+let textField = PublishSubject<String>()
+
+// withLatestFromは呼ばれたら()内に指定した購読対象の最新の結果を購読処理する、最新がない場合は無視
+let observable = button.withLatestFrom(textField)
+
+observable.subscribe(onNext: {
+    print($0)
+}).disposed(by: disposeBag)
+
+textField.onNext("ddd")
+textField.onNext("Swift")
+textField.onNext("RxSwift")
+
+// ボタンを押すと最新のtextFieldの値が流れるイメージ
+button.onNext(())
+
+// 結果：RxSwift
+
+
+
+
+
+
+let disposeBag = DisposeBag()
+
+// 登録時初期値なし
+let left = PublishSubject<Int>()
+let right = PublishSubject<Int>()
+let center = PublishSubject<Int>()
+
+// combineLatestは複数の購読対象を並列で処理できる（対象が全て購読されないと処理されない、left, rightともに呼ばれないとダメ）
+// 各対象にて最新の値が保持される
+let observable = Observable.combineLatest(left, right, center, resultSelector: { lastLeft, lastRight, lastCenter in
+    // resultSelectorで購読時の並列結果出力の形を指定している
+    "\(lastLeft) \(lastRight) \(lastCenter)" // 例: 45 1 20
+})
+
+observable.subscribe(onNext: {
+    print($0)
+}).disposed(by: disposeBag)
+
+left.onNext(45)
+right.onNext(1)
+center.onNext(20)
+left.onNext(30)
+right.onNext(1)
+right.onNext(2)
+center.onNext(40)
+/*
+結果
+ 45 1 20
+ 30 1 20
+ 30 1 20
+ 30 2 20
+ 30 2 40
+ */
+
+
+
+
+
+
+
+
+let disposeBag = DisposeBag()
+
+// 登録時初期値なし
+let left = PublishSubject<Int>()
+let right = PublishSubject<Int>()
+
+// ２本の道（オブザーバブル）
+let source = Observable.of(left.asObservable(),
+                           right.asObservable())
+// 一本にマージする（2本の道に入るイベントを統合する）
+// mergeは複数の道を統合して、入ってくるイベントの受け口を統合する
+let observable = source.merge()
+
+observable.subscribe(onNext: {
+    print($0)
+}).disposed(by: disposeBag)
+
+left.onNext(5)
+left.onNext(3)
+right.onNext(2)
+right.onNext(1)
+left.onNext(99)
+
+// 結果：5, 3, 2, 1, 99
+
+
+
+
+
+
+
+
+let disposeBag = DisposeBag()
+
+// concatは要素ごとを連結させてオブザーバブルを流せる
+let first = Observable.of(1, 2, 3)
+let second = Observable.of(4, 5, 6)
+
+// オブザーバブルの配列を結合
+let observable = Observable.concat([first, second])
+
+observable.subscribe(onNext: {
+    print($0)
+}).disposed(by: disposeBag)
+// 結果：1, 2, 3, 4, 5, 6
+
+
+
+
+let disposeBag = DisposeBag()
+
+let numbers = Observable.of(2, 3, 4)
+
+// startWithはObservableの最初に流す要素（event）を指定できる
+// スタート値の後に指定の要素が流れる（10の後に2がくる）
+let observable =  numbers.startWith(10)
+observable.subscribe(onNext: {
+    print($0)
+}).disposed(by: disposeBag)
+
+// 結果：10, 2, 3, 4
+
+
+
+
 // 非同期処理を同期的に行い返す（urlRequest作成→リクエスト実行→レスポンスをparse→observableで流す）
         // flatMapは非Observableが流れてきた時
         // mapはObservableが流れてきた時
