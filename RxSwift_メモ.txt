@@ -1,6 +1,102 @@
+スレッド操作
+
+MainSchedulerはSerialDispatchQueueSchedulerのサブクラスです。MainScheduler.asyncInstanceもこのSerialDispatchQueueSchedulerになります。
+
+
+DispatchQoSやDispatchQueueを渡してinitします。渡されたDispatchQueueがConcurrentでも中でSerial Queueが生成されており、必ずSerialになります。
+let serialScheduler1 = SerialDispatchQueueScheduler(qos: .background)
+let serialScheduler2 = SerialDispatchQueueScheduler(queue: DispatchQueue.main, internalSerialQueueName: "jp.eure.pairs.main.serial")
+ConcurrentDispatchQueueScheduler
+バックグラウンドスレッドで動作させたい場合は通常こちらのSchedulerを使用します。
+let backgroundScheduler = ConcurrentDispatchQueueScheduler(qos: .background)
+OperationQueue
+あるOperationQueueでまとまった処理をしたい場合は、こちらのOperationQueueSchedulerを使います。特にConcurrentに処理する数を制限したいときにmaxConcurrentOperationCountを設定します。
+let operationQueue = OperationQueue()
+operationQueue.maxConcurrentOperationCount = 3
+let operationScheduler = OperationQueueScheduler(operationQueue: operationQueue)
+特に指定しない場合
+特に指定がなければ、CurrentThreadSchedulerで動きます。こちらはSubscribeが実行されるスレッドでOperatorやSubscribeの処理が実行されます。
+DispatchQueue.main.async {
+_ = someObservable1
+    .subscribe(onNext: { _ in
+      // メインスレッド
+    })
+}
+
+
+disposedする時はmainのスレッドで合わせておかないと、disposedの後にonNextが来たりしてしまう
+
+
+import Foundation
+import RxSwift
+import RxCocoa
+
+mapはflatMapにつけると戻り値はObservable
+
+/*
+ API通信を行い、マップして返すサンプル
+ */
+
+protocol ApiDataStore {
+    func request<T: Decodable>(_ apiRequest: Resource<T>) -> Observable<Result<(result: T, response: HTTPURLResponse), Error>>
+}
+
+struct Resource<T: Decodable> {
+    let request: URLRequest
+}
+
+struct ApiDataStoreImpl: ApiDataStore {
+    func request<T: Decodable>(_ apiRequest: Resource<T>) -> Observable<Result<(result: T, response: HTTPURLResponse), Error>> {
+        return URLSession.shared.rx.response(request: apiRequest.request).map { (response, data) in
+            do {
+                let result = try JSONDecoder().decode(T.self, from: data)
+                return .success((result, response))
+            } catch {
+                return .failure(APIError.failedParse)
+            }
+        }
+    }
+}
+
+
+
+import UIKit
+import RxSwift
+import RxCocoa
+
+extension Reactive where Base: UIBarButtonItem {
+    var isEnableEmpty: Binder<String> {
+        return Binder(base) { buttonItem, string in
+            // 空文字の時は非活性にする
+            buttonItem.isEnabled = !string.isEmpty
+        }
+    }
+}
+
+
+
+
+BehaviorRelayとPublishRelayは、.nextだけ流せます。つまり、.errorや.completedが流れてこないことを保証できます。.
+
+
+
+宣言的にかけるRxを使うとViewModelを保持する必要はない
+MVPなら宣言的に書けないためinput毎に手続きが必要なため、viewmodelを保持する必要がある
+
+onErrorでハンドルするとonCompletedは流れないけど、その前にcatchErrorで捕まえて、適当なobservableを流せば、onCompletedは走る
+Observable.empty()など
+
+
+
+shareReplayLatestWhileConnected
+
+大体 shareReplay(1) と同じだけど observer が居なくなったら replay バッファをクリアするやつ
+
+
+
 tableView系のrx
 
- // 以下、UITableViewDelegateの準拠は必須
+ // 以下、UITableViewDelegateの準拠はいらない（デリゲート通知を受ける前にbindしてしまうため）
         // viewModel側で保持しているデータソースとtableViewのDataSourceをbindする（UITableViewDataSource役）
         viewModel.articles
             .bind(to: newsListTableView.rx.items(cellIdentifier: NewsInfoCell.identifier,

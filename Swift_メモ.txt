@@ -1,5 +1,46 @@
 Swift コードメモ
 
+
+【結論】UIViewにグラデーションを適用し，UILabelでマスクする。
+let frame: CGRect = /* foo */
+let view: UIView = UIView(frame: frame)
+let label: UILabel = UILabel(frame: frame)
+
+label.text = /* bar */
+// ViewにLabelを追加する
+view.addSubView(label)
+
+// CAGradientLayerによるグラデーションの適用
+let gradientLayer: CAGradientLayer = CAGradientLayer()
+gradientLayer.frame = view.bounds
+gradientLayer.colors = [
+    /* UIColor */
+]
+// グラデーション方向の指定 (以下は縦方向)
+gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
+gradientLayer.endPoint = CGPoint(x: 0.5, y: 1.0)
+
+// Viewに対してグラデーションを適用させる
+view.layer.insertSublayer(self.gradientLayer, at: 0)
+
+// ViewをLabelでマスクする
+view.mask = label
+
+
+
+
+
+
+kingfisher アニメーション
+
+imageView.kf.setImage(with: url, 
+                options: [
+                      .transition(ImageTransition.fade(0.3)), // フェードイン
+                      .forceTransition, // 設定すると、Kingfisherは値をメモリにのみキャッシュし、ディスクにはキャッシュしません。（アプリが膨らまないが、メモリ解放で消える）
+                      .keepCurrentImageWhileLoading // 変わる時、ロードするまで前のをキープ
+                ]
+)
+
 システムによるstatusbarの最適化による色変更を無効
 View controller-based status bar appearanceをNO
 
