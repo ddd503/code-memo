@@ -1,0 +1,190 @@
+paizaメモ
+
+大きいやつから3つかける
+if let readLine = readLine() {
+    let stringArray = readLine.components(separatedBy: ",")
+    if stringArray.count >= 3 {
+        let intArray = stringArray.compactMap { Int($0) }.sorted { $0 > $1 }
+        if intArray.count >= 3 {
+            let maxValue = intArray[0] * intArray[1] * intArray[2]
+            print(maxValue)
+        }
+    } else {
+        print(-1)
+    }
+
+}
+
+
+リードラインから３回出力
+if let readLine = readLine(), let count = Int(readLine) {
+  (0..<count).forEach { (_) in 
+                      print("Hello")
+                      }
+}
+
+
+
+行の文字列を取得して、列ごとで計算する
+import Foundation
+
+/// 空白区切りでくる行の文字列をIntの配列に変える
+let getLineNumbers = { (_ text: String) -> ([Int]) in
+    return text.components(separatedBy: "\n").first!.components(separatedBy: " ").compactMap { Int($0) }
+}
+let firstLine: String = readLine()!
+let firstLineNumbers = getLineNumbers(firstLine)
+let secondLine: String = readLine()!
+let secondLineNumbers = getLineNumbers(secondLine)
+let firstValue = firstLineNumbers[0] * secondLineNumbers[1]
+let secondValue = firstLineNumbers[1] * secondLineNumbers[0]
+print(firstValue - secondValue)
+
+
+
+ローカルとドメインに分かれた文字列でメールアドレスを作る
+import Foundation
+
+let local: String = readLine()!
+let localString: String = local.components(separatedBy: "\n").first!
+let domain: String = readLine()!
+let domainString: String = domain.components(separatedBy: "\n").first!
+let mailAddress: String = localString + "@" + domainString
+print(mailAddress)
+
+
+
+割った余りを出す
+import Foundation
+
+let peopleCountString: String = readLine()!
+let peopleCount: Double = Double(peopleCountString.components(separatedBy: "\n").first!)!
+let sweetsCountString: String = readLine()!
+let sweetsCount: Double = sweetsCountString.components(separatedBy: "\n").first!.components(separatedBy: " ").compactMap { Double($0) }.reduce(1) { $0 * $1 }
+let remainder: Int = Int(sweetsCount.truncatingRemainder(dividingBy: peopleCount))
+print(remainder)
+
+
+
+分けて、引く
+let ddd = "3 4\n"
+let counts = ddd.components(separatedBy: "\n").first!.components(separatedBy: " ").compactMap { Int($0) }
+
+print(counts[0] - counts[1]) // -1\n
+
+
+絶対値
+let ddd = "-1\n"
+let count = Int(ddd.components(separatedBy: "\n").first!)!
+print(abs(count))
+
+
+extension String {
+    /// 特定の文字区切りで返す and filter機能付き
+    func components(separatedBy string: String, fileter: String) -> [String] {
+        return input_line.components(separatedBy: string).filter { $0 != fileter }
+    }
+}
+
+extension Array {
+    /// 自身を抜いた配列を返す
+    func noSelfArray(index: Int) -> Array {
+        guard count > index else { return self }
+        var newArray = self
+        newArray.remove(at: index)
+        return newArray
+    }
+}
+
+指定の文字地点から区切る
+let split = input_line.split(whereSeparator: { $0 == "\n"} )
+print(split) // "["2 9 3 8 "]\n"
+
+
+複数回呼ぶ予定（段がついた出力は複数のgetが必要）
+let value1: String = readLine()!
+let value2: String = readLine()!
+print("\(180 - (Int(value1)! + Int(value2)!))")
+
+
+各種APIはimport Foundationが提供してくれる！！！
+
+型推論なし
+
+Int 数値型を受け取る
+let input_line: Int = Int(readLine()!)!
+
+空白で分けて配列にする
+readLine()!.split(" ").map { Int($0)! }
+
+〜で区切るにcomponentsは使えない
+これはダメ
+text.components(separatedBy: "\n")
+
+
+
+// 語尾の空行を削除した上で文字列をIntに変換している（総当たりの試合数計算）
+let line: String = "4\n"
+let playerCount: Int = Int(line.components(separatedBy: "\n").first!)!
+print("\(playerCount * (playerCount - 1) / 2)")
+
+
+文字列から改行のぞいて数値を取得
+let value = Int(input_line.split(separator: "\n").compactMap { Int($0) }.first!)
+
+
+Character型をIntにする場合
+Int(Character型の何か.description)
+
+暗号変換の問題（数字がきて、それに対応する文字列の出力）
+import Foundation
+
+enum TextType: Int {
+    case one = 1
+    case two = 2
+    case zero = 0
+
+    var string: String {
+        switch self {
+        case .one:
+            return "A"
+        case .two:
+            return "B"
+        case .zero:
+            return "C"
+        }
+    }
+}
+
+let input_line: String = readLine()!
+let text = input_line.compactMap { Int($0.description) }.compactMap { TextType(rawValue: $0)?.string }.joined()
+print(text)
+
+
+
+テストのボーダー足切り
+import Foundation
+
+let input_line: String = readLine()!
+
+func isPass(point: Int, border: Int) -> Bool {
+    return point >= border
+}
+
+let firstLine = input_line.components(separatedBy: "\n")
+let peopleCount = Int(firstLine[0].components(separatedBy: " ").first!)!
+let border = Int(firstLine[0].components(separatedBy: " ").last!)!
+var values: [String] = []
+
+for _ in 0..<peopleCount {
+    values.append(readLine()!)
+}
+
+values.enumerated().forEach { (offset, value) in
+    let point = Int(value.components(separatedBy: " ").first!)!
+    let minus = Int(value.components(separatedBy: " ").last!)! * 5
+    let studentNumber = offset + 1
+    if isPass(point: point - minus, border: border) {
+        print(studentNumber)
+    }
+}
