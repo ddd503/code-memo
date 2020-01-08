@@ -182,7 +182,7 @@ shareReplayLatestWhileConnected
 
 tableView系のrx
 
- // 以下、UITableViewDelegateの準拠はいらない（デリゲート通知を受ける前にbindしてしまうため）
+ // 以下、UITableViewDelegateの準拠はいらない（デリゲート通知を受けるのではなくbindしてしまうため）
         // viewModel側で保持しているデータソースとtableViewのDataSourceをbindする（UITableViewDataSource役）
         viewModel.articles
             .bind(to: newsListTableView.rx.items(cellIdentifier: NewsInfoCell.identifier,
