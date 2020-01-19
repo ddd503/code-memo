@@ -1,5 +1,120 @@
 Swift コードメモ
 
+segmentedcontrolをいじる（UISegmentedControl）
+// タイトルの色とフォントサイズの指定
+            let titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white,
+                                       NSAttributedString.Key.font: UIFont.systemFont(ofSize: 20)]
+            segmentedControl.setTitleTextAttributes(titleTextAttributes, for: .normal)
+
+
+
+CompositionalLayoutsの使い方
+
+func createLayout() -> UICollectionViewLayout {
+        /*
+         item作る → Group作る → Section作る
+         */
+        let 外枠からの横幅: CGFloat = 18
+        let セル間の横幅: CGFloat = 8
+        let グループ間の縦幅: CGFloat = 8
+        let CVの横幅: CGFloat = view.bounds.width
+        let 小さい方の四角形の横幅: CGFloat = (CVの横幅 - (外枠からの横幅 * 2 + セル間の横幅 * 2)) / 3
+        let 大きい方の四角形の横幅: CGFloat = 小さい方の四角形の横幅 * 2 + セル間の横幅
+        let 大きい四角形側のグループの高さ: CGFloat = 大きい方の四角形の横幅 + グループ間の縦幅
+        let 小さい四角形側のグループの高さ: CGFloat = 小さい方の四角形の横幅 + グループ間の縦幅
+
+        let sections = UICollectionViewCompositionalLayout {
+            (sectionIndex: Int, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
+
+            // グループ1
+            let 小2中1のグループ: NSCollectionLayoutGroup = {
+                let smallSquareItem = NSCollectionLayoutItem(
+                    layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                      heightDimension: .absolute(小さい方の四角形の横幅 + セル間の横幅)))
+                smallSquareItem.contentInsets = NSDirectionalEdgeInsets(top: グループ間の縦幅, leading: 0, bottom: 0, trailing: セル間の横幅)
+                let smallSquareGroup = NSCollectionLayoutGroup.vertical(
+                    layoutSize: NSCollectionLayoutSize(widthDimension: .absolute(小さい方の四角形の横幅 + セル間の横幅),
+                                                      heightDimension: .fractionalHeight(1.0)),
+                    subitem: smallSquareItem, count: 2)
+
+                let mediumSquareItem = NSCollectionLayoutItem(
+                    layoutSize: NSCollectionLayoutSize(widthDimension: .absolute(大きい方の四角形の横幅),
+                                                      heightDimension: .fractionalHeight(1.0)))
+                mediumSquareItem.contentInsets = NSDirectionalEdgeInsets(top: グループ間の縦幅, leading: 0, bottom: 0, trailing: 0)
+
+                let nestedGroup = NSCollectionLayoutGroup.horizontal(
+                    layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                      heightDimension: .absolute(大きい四角形側のグループの高さ)),
+                    subitems: [smallSquareGroup, mediumSquareItem])
+                return nestedGroup
+            }()
+
+            // グループ2
+            let 中1小2のグループ: NSCollectionLayoutGroup = {
+                let mediumSquareItem = NSCollectionLayoutItem(
+                    layoutSize: NSCollectionLayoutSize(widthDimension: .absolute(大きい方の四角形の横幅 + セル間の横幅),
+                                                      heightDimension: .fractionalHeight(1.0)))
+                mediumSquareItem.contentInsets = NSDirectionalEdgeInsets(top: グループ間の縦幅, leading: 0, bottom: 0, trailing: セル間の横幅)
+
+                let smallSquareItem = NSCollectionLayoutItem(
+                    layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                      heightDimension: .absolute(小さい方の四角形の横幅 + セル間の横幅)))
+                smallSquareItem.contentInsets = NSDirectionalEdgeInsets(top: グループ間の縦幅, leading: 0, bottom: 0, trailing: 0)
+                let smallSquareGroup = NSCollectionLayoutGroup.vertical(
+                    layoutSize: NSCollectionLayoutSize(widthDimension: .absolute(小さい方の四角形の横幅),
+                                                      heightDimension: .fractionalHeight(1.0)),
+                    subitem: smallSquareItem, count: 2)
+
+                let nestedGroup = NSCollectionLayoutGroup.horizontal(
+                    layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                      heightDimension: .absolute(大きい四角形側のグループの高さ)),
+                    subitems: [mediumSquareItem, smallSquareGroup])
+                return nestedGroup
+            }()
+
+            // グループ3
+            let 小3のグループ: NSCollectionLayoutGroup = {
+                let smallSquareItem = NSCollectionLayoutItem(
+                    layoutSize: NSCollectionLayoutSize(widthDimension: .absolute(小さい方の四角形の横幅),
+                                                      heightDimension: .fractionalHeight(1.0)))
+
+                let smallSquareGroup = NSCollectionLayoutGroup.horizontal(
+                    layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                      heightDimension: .absolute(小さい四角形側のグループの高さ)),
+                    subitem: smallSquareItem,
+                    count: 3)
+                smallSquareGroup.interItemSpacing = .fixed(セル間の横幅)
+                smallSquareGroup.contentInsets = NSDirectionalEdgeInsets(top: グループ間の縦幅, leading: 0, bottom: 0, trailing: 0)
+
+                return smallSquareGroup
+            }()
+
+            // グループの集合体
+            let groups = NSCollectionLayoutGroup.vertical(
+            layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                               heightDimension: .absolute(大きい四角形側のグループの高さ * 2 + 小さい四角形側のグループの高さ * 2)),
+            subitems: [小2中1のグループ, 小3のグループ, 中1小2のグループ, 小3のグループ])
+
+            // セクション
+            let section = NSCollectionLayoutSection(group: groups)
+            section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 外枠からの横幅, bottom: 0, trailing: 外枠からの横幅)
+            return section
+
+        }
+        return sections
+    }
+
+
+
+CompositionalLayoutsのヘッダー
+
+let headerItem = NSCollectionLayoutSupplementaryItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                                                                heightDimension: .absolute(headerHeight)),
+                                                             elementKind: "header",
+                                                             containerAnchor: .init(edges: .top))
+
+
+
 
 【結論】UIViewにグラデーションを適用し，UILabelでマスクする。
 let frame: CGRect = /* foo */
