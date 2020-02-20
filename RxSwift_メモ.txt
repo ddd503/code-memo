@@ -1,3 +1,28 @@
+Driver.never()・・・値が発生しない、そこで終わり、complite(完了)が走らない
+Driver.empty()・・・errorの場合、それを無視する（エラーハンドルで使う？）
+
+
+
+
+1.購読時
+2.更新時(バインド)
+1にも流れるのはBehaviorRelay
+2から流れるのは
+
+
+
+Observable.just(1)
+// 1が流れる
+Observable.of(1)
+// 1が流れる
+Observable.of(1, 2)
+// 1が流れて、2が流れる（時間差なしで順不動）
+
+
+flatMapとmapは流れてくるeventの処理できるが、mapは戻り値がオプショナルになる可能性があるので、flatMapで外す（self?とかをmapで使うとハマりやすい）
+map使うともう1層オペレータがかぶる
+
+
 let disposeBag = DisposeBag()
 
 let input = PublishSubject<String>()
@@ -840,6 +865,24 @@ extension Reactive where Base: UILabel {
             label.textColor = result.textColor
             label.text = result.description
         }
+    }
+}
+
+UIColor、背景、backgroundColor、をBinderする
+
+public extension Reactive where Base: UIScrollView {
+    var backgroundColor: ControlProperty<UIColor> {
+        let source = self.observeWeakly(UIColor.self, "backgroundColor", options: [.initial, .new])
+            // Skip nil values (which in practice does not happen, but KVO observe returns Optional)
+            .filter { $0 != nil }.map { $0! }
+            .takeUntil(deallocated)
+        
+        // `base` is a property of `Reactive` and, here, of type `NSScrollView`
+        let observer = Binder(base) { (scrollView, newColor: UIColor) in
+            scrollView.backgroundColor = newColor
+        }
+        
+        return ControlProperty(values: source, valueSink: observer)
     }
 }
 
