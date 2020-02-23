@@ -1,5 +1,89 @@
 Objective-C コードメモ
 
+UIKitのsetterをdidSetとして使うのやばい、UITextViewとか.textがnullになる
+プロパティのprotocol単体でstored（値を保持できないため）implで変数を用意してsetter、getterでそれぞれimplを使う
+
+SwiftファイルをObjCクラスにインポートする
+#import <#YourProjectName#>-Swift.h>
+
+
+遅延実行
+dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
+    });
+
+// Objective-CでSwitch内でStringを使えるっぽく書く方法
+#define CASE(string) if ([__s__ isEqualToString:(string)])
+#define SWITCH(s) for (NSString *__s__ = (s); __s__; __s__ = nil)
+#define DEFAULT
+
+NSString * string = self.expectation.description;
+    SWITCH(string) {
+        CASE(@"") {
+
+        }
+        DEFAULT {
+            break;
+        }
+    }
+
+
+
+プロパティでのクロージャ
+@property (nonatomic) void (^tappedActionSheet)(AlertEventType);
+swiftなら
+var tappedActionSheet: (AlertEvent) -> () { get set }
+
+引数がないクロージャーの呼び方
+completion:^(void * _Nullable (_)(void), NSInteger * _Nullable errorCode)
+
+
+XCTAssertEqualはダメ
+XCTAssertTrue([memoItem.uniqueId isEqualToString:@"4"]);
+
+
+
+/*** Convenience Methods ***/
++ (NSCompoundPredicate *)andPredicateWithSubpredicates:(NSArray<NSPredicate *> *)subpredicates NS_SWIFT_NAME(init(andPredicateWithSubpredicates:));
++ (NSCompoundPredicate *)orPredicateWithSubpredicates:(NSArray<NSPredicate *> *)subpredicates NS_SWIFT_NAME(init(orPredicateWithSubpredicates:));
++ (NSCompoundPredicate *)notPredicateWithSubpredicate:(NSPredicate *)predicate NS_SWIFT_NAME(init(notPredicateWithSubpredicate:));
+
+
+
+   @try {
+//        [context save:nil];
+    } @catch (NSException *exception) {
+//        return FailedSaveContext;
+    }
+
+
+エラー定義
+[NSError errorWithDomain: @"domain" code: 999 userInfo: nil];
+
+公開する定数には　extern　をつける(.h側)
+
+
+クロージャの引数　私
+completion:(void (^) (NSArray *contentsList, NSURLResponse *response, NSError *error))completion
+
+- (void) fetchContentnsInfo: (NSString *)url completion:(void (^) (NSArray *contentsList, NSURLResponse *response, NSError *error))completion json2Model:(NSArray* (^) (NSArray *jsonArray))json2Model
+{
+
+
+
+
+
+lazy == @synthesize 
+
+@synthesize persistentContainer = _persistentContainer;
+lazy var persistentContainer: NSPersistentContainer
+
+
+
+
+@protocol・・・実装を強制
+@interface・・・実装可能な実装(classが持っているメソッド)、privateなら.mに書く、internal以降なら.hに書く
+
 よく使う用メモ
 ※クラスと定数は頭文字は大文字！！
 ストリングファイル

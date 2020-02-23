@@ -1,0 +1,319 @@
+touch ファイル名
+新規ファイル作成
+
+cat ファイル名
+ファイルの中身を確認する
+
+mkdir ディレクトリ名
+ディレクトリ（フォルダー）を作成する
+
+cd ディレクトリ名
+対象のディレクトリに移動する
+
+pwd
+作業中のディレクトリを確認する(path確認)
+
+ls
+ディレクトリの中身を確認する
+
+cd ..
+１つ上の階層のディレクトリへ移動
+
+cd
+ホームディレクトリ(拠点のディレクトリ)に移動
+
+mv ファイル名(ディレクトリ) ディレクトリ名
+指定のファイルorディレクトリを指定のディレクトリに移動させる
+
+mv ファイル名 新しいファイル名
+ファイル名を変更する
+
+cp コピーするファイル名 新しいファイル名
+指定のファイルをコピーする（名前違うだけで中身同じもの）
+
+cp -r コピーするディレクトリ名 新しいディレクトリ名
+指定のディレクトリをコピーする（名前違うだけで中身同じもの）
+
+rm ファイル名
+ファイルの削除
+
+rm -r ディレクトリ名
+ディレクトリの削除
+
+rmdir ディレクトリ名
+空のディレクトリの削除
+
+railsの起動
+rails server
+
+commit前の変更差分の削除（取り消し）
+git checkout -f
+
+新規ブランチ作成
+git checkout -b　ブランチ名
+
+リモートからherokuへのpush
+git push heroku
+
+heroku側のマイグレーション
+heroku run rails db:migrate
+
+新アプリの作成（バージョン指定&toy_appと言うアプリを作成）
+rails _5.1.6_ new toy_app
+
+ローカルgemのみinstall
+bundle install --without production
+
+Controller（名：StaticPages）とその内部アクション（home, help）をまとめて作成
+rails generate controller StaticPages home help
+
+「User」モデルの作成（name、emailプロパティ持ち、プライマリーキーは別途標準装備、scaffold使った版）
+rails generate scaffold User name:string email:string
+
+作ったものをまんま消す
+rails destroy 作成コマンドそのまま
+
+作ったモデルをDB側に反映
+rails db:migrate
+
+文字数制限
+validates :content, length: { maximum: 140 }
+
+dbクラスに書く
+1対多のモデルリレーション付け（User型(1の方)のところに書く）
+has_many :多数のモデル名（複数形）
+例：has_many :microposts
+多数の方にも書く（Micropost側）
+belongs_to :user
+
+
+test環境にのみgemをinstall
+bundle install --without production
+
+herokuのインストール
+source <(curl -sL https://cdn.learnenough.com/heroku_install)
+
+herokuのプロジェクト作成
+heroku create
+
+masterのpush
+git push heroku master
+
+
+
+完全なコマンド	        短縮形
+$ rails server	        $ rails s
+$ rails console	        $ rails c
+$ rails generate	$ rails g
+$ rails test	        $ rails t
+$ bundle install	$ bundle
+
+ページのタイトルが指定の文字列かどうかのテスト（評価）
+assert_select "title", "Home | Ruby on Rails Tutorial Sample App"
+
+
+開発ブランチ（develop）をherokuのmasterブランチにpushする
+git push heroku develop:master
+
+
+テスト結果に色つける（test/test_helper.rbに記載）
+require "minitest/reporters"
+Minitest::Reporters.use!
+
+テスト用の機能guardの実行（テストモードに入るので別windowで）終了したい時はCtrl+D
+bundle exec guard
+
+
+引数付きのif文（戻り値はstring）
+# ページごとの完全なタイトルを返します。
+  def full_title(page_title = '')
+    base_title = "Ruby on Rails Tutorial Sample App"
+    if page_title.empty?
+      base_title
+    else
+      page_title + " | " + base_title
+    end
+  end
+
+rails consoleの起動
+rails console
+
+rails consoleの終了
+cntrol+D
+rails consoleの強制終了
+cntrol+C
+
+変数の文字列化
+"変数の中身：#{last_name}"
+
+文字列の出力（print系）
+puts "foo"  
+
+#を文字列で使いたい時
+\#
+
+空チェック
+文字列.empty?
+
+含むかチェック
+文字列.include?("???")
+
+文字列へのキャスト
+変数.to_s
+
+xに値が入っている場合のみ出力(puts)実行する
+puts "x is not empty" if !x.empty?
+
+文字列分割（引数なしだと空白で分割）
+.split 
+.split('x')
+
+配列、逆転
+.reverse
+
+配列、シャッフル
+.shuffle
+
+()で囲んだものを配列に変換
+(0..9).to_a 
+
+Dic
+{"last_name"=>"Hartl", "first_name"=>"Michael"}
+
+dicをkey valueに分解
+flash = { success: "It worked!", danger: "It failed." }
+flash.each do |key, value|
+puts "Key #{key.inspect} has value #{value.inspect}"
+
+配列を個別の値ばらけさせてとして扱う（元の変数は変化しない）
+.to_a 
+
+配列として扱う（元の変数は変化しない）
+.to_a.inspect
+
+文字列のイニシャライズ
+s = String.new("foobar")
+
+配列のイニシャライズ
+a = Array.new([1, 3, 2])
+
+1〜10までの範囲オプジェクトのinit
+Range.new(1, 10)
+
+イニシャライザ ＝＝ コントラクタ
+
+小文字にする
+.downcase
+
+console中にexample_user.rbファイルのコードを読み込む方法
+require './example_user'
+
+変数nameのprint
+"#{@name}"
+
+# プロパティの定義（get, set）
+  attr_accessor :name, :email
+
+  # イニシャライザ
+  def initialize(attributes = {})
+    @name  = attributes[:name]
+    @email = attributes[:email]
+  end
+
+呼び方
+user = User.new(name: "Michael Hartl", email: "mhartl@example.com")
+
+条件付きコメント：判定を満たさない限りコメントのままで、trueならコメントではなく実処理になる
+例
+(IE) のバージョンが9より小さい場合 (if lt IE 9) にのみ、囲まれている行を実行します。
+<!--[if lt IE 9]>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/r29/html5.min.js">
+      </script>
+    <![endif]-->
+
+リンク付き文章（railsのヘルパー使用）
+<%= link_to "文字列", 'URL', id: "uniqueID" %>
+
+ナビゲーションエリア内にリスト表示
+        <nav>
+          <ul class="nav navbar-nav navbar-right"> // CSSの設定を適用
+            <li><%= link_to "Home",   '#' %></li>
+            <li><%= link_to "Help",   '#' %></li>
+            <li><%= link_to "Log in", '#' %></li>
+          </ul>
+        </nav>
+ulで囲んで、liで各要素を箇条化
+link_toもヘルパーメソッドで本当は「a href=」
+
+コメント
+<%# コメントアウト　%>
+
+置いた画像をダウンロードして表示できるようにする
+curl -o app/assets/images/rails.png -OL railstutorial.jp/rails.png
+
+kitten.jpgのダウンロード
+curl -OL cdn.learnenough.com/kitten.jpg
+
+.scssの拡張子を持つファイルは.cssファイルの拡張ファイル
+
+railsヘルパー
+スタイルシートの読み込み
+<%= render 'layouts/header' %>
+これを読み込んでいる
+app/views/layouts/_header.html.erb
+
+hover属性は、該当する要素の上にマウスポインタをかざしたときの表示を定義します
+
+Sassの変数定義
+$light-gray: #777;
+使い方
+color: $light-gray;
+
+インポートする
+@import "bootstrap";
+
+require
+
+rootURLを取得するメソッド
+root_path・・・ルートURL以下の文字列
+root_url・・・完全なURLの文字列
+
+root_path -> '/'
+root_url  -> 'http://www.example.com/'
+
+rootをこう定義すればpathメソッドなどが使える
+get  '/help', to: 'static_pages#help'
+
+railsでtest/integration/のpathにsite_layout_test.rbというファイルを作る
+rails generate integration_test site_layout
+
+遷移（railsヘルパーなし）
+<a href="/about">...</a>
+
+指定のファイル(ディレクトリ)だけテストする（integrationディレクトリをテスト）
+rails test:integration
+
+テスト時の評価メソッド
+<div>foobar</div>があることをテスト（divがあることをテスト）
+assert_select "div"	
+
+<div>foobar</div>があることをテスト（foobarの文字まで指定）
+assert_select "div", "foobar"
+
+<div class="nav">foobar</div>（divにnavクラスがあることをテスト）
+assert_select "div.nav"
+
+<div id="profile">foobar</div>（divのidクラスにprofileのidが振られていることを確認）
+assert_select "div#profile"
+
+<div name="yo">hey</div>
+assert_select "div[name=yo]"
+
+<a href="/">foo</a>（遷移テスト、遷移できるリンクが1つであること）
+assert_select "a[href=?]", '/', count: 1
+
+<a href="/">foo</a>（遷移テスト、遷移的るリンクが1つあって、テキストがfooであること）
+assert_select "a[href=?]", '/', text: "foo"
+
+Userモデルを生成する
+rails generate model User name:string email:string
