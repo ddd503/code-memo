@@ -1641,6 +1641,9 @@ private func isPresentedDetailQRCodeView() -> Bool {
     }
 
 
+collectionViewのcellの上のイメージの座標（self.viewからみた）を取得
+cell.convert(cell.photoImageView.frame, to: self.view)
+
 親以外のViewからみた座標を取得する（中心座標など）
 親View.convert(座標を取得したい子View, to: 親View以外のView（このViewからみた座標）)
 （super→view1→subview）でsubviewの座標を決めるときは
