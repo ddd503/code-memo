@@ -1,5 +1,15 @@
 Swift コードメモ
 
+CollectionViewのセルCellのFrameを取得
+let theAttributes = collectionView.layoutAttributesForItem(at: indexPath)
+let cellFrameInSuperview = collectionView.convert(theAttributes.frame, to: collectionView.superview)
+
+//右上と左下を角丸にする設定
+blueView.layer.maskToBounds = true
+blueView.layer.cornerRadius = 15
+blueView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMinYCorner]
+
+
 extension UIImage {
     // UIImageView内にcontentModeをaspectFitで表示した場合のUIImageのサイズ
     func aspectFitSize(imageViewBounds: CGRect) -> CGSize {

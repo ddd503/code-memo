@@ -1,0 +1,20 @@
+// landmarkDataの要素(Landmark)をlistで並べる（idプロパティをkeyに取得するようにしている）
+List(landmarkData, id: \.id) {}
+
+↑はLandmarkクラスがIdentifiableプロトコルに準拠していれば、どのkeyで取得するかの指定はいらない
+List(landmarkData) {}
+
+プレビューpreviewできる端末のリストをターミナルで取得
+xcrun simctl list devicetypes
+
+
+static var previews: some View {
+        Group { // 複数端末でpreview見る
+            LandmarkList()
+                .previewDevice(PreviewDevice(rawValue: "iPhone SE"))
+                .previewDisplayName("iPhone SE")
+            LandmarkList()
+                .previewDevice(PreviewDevice(rawValue: "iPhone XS Max"))
+                .previewDisplayName("iPhone XS Max")
+        }
+    }
