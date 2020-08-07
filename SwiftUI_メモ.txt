@@ -1,3 +1,19 @@
+@EnvironmentObjectをつけるとViewクラス全体で共通のプロパティとなります。（View内部のshardなpropatyになる）
+@EnvironmentObject var userData: UserData
+
+@Stateを頭につけると変数が変更可能になる mutableになる、基本はSwiftUIのViewは変更不可能
+@State var showFavoritesOnly = false
+
+
+変数とのバインディングは頭に$をつける
+$showFavoritesOnly
+例
+// スイッチタイプのセル生成
+Toggle(isOn: $showFavoritesOnly) {
+                    Text("Favorites only")
+                }
+
+
 // landmarkDataの要素(Landmark)をlistで並べる（idプロパティをkeyに取得するようにしている）
 List(landmarkData, id: \.id) {}
 
@@ -18,3 +34,11 @@ static var previews: some View {
                 .previewDisplayName("iPhone XS Max")
         }
     }
+
+
+for文で回してpreview端末増やす
+ForEach(["iPhone SE", "iPhone XS Max"], id: \.self) { deviceName in
+                LandmarkList()
+                    .previewDevice(PreviewDevice(rawValue: deviceName))
+                    .previewDisplayName(deviceName)
+            }
