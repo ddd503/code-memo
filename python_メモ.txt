@@ -1,0 +1,14 @@
+ローカルサーバー起動
+python manage.py runserver
+
+ローカルサーバー止める
+Control+C
+
+アプリ追加などの変更を行った場合に必要なマイグレーション
+python manage.py migrate
+
+クラス追加時にマイグレーション前に行う更新
+python manage.py makemigrations books
+
+API叩いてみる
+curl http://127.0.0.1:8000/api/
