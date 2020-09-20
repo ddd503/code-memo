@@ -1,0 +1,62 @@
+定数定義
+const anExampleVariable: string = "こんにちは、世界!"
+
+package.jsonの作成（npmパッケージの管理ファイル）
+npm init -y
+
+nodebrewでのnodeバージョン確認
+nodebrew ls-remote
+
+nodebrewでのバージョンインストール
+nodebrew install-binary バージョン
+
+使用中のバージョン表示
+nodebrew ls
+
+使用バージョンの指定
+nodebrew use バージョン
+
+typescriptのインストール（--save-devオプションは開発環境にのみインストール、コンパイル後はJSになり、typescript必要ないのでdevで良い）
+npm install --save-dev typescript@3.7.5 
+
+tscを利用した.tsファイル→.jsファイルのコンパイル
+./node_modules/.bin/tsc src/install-typescript.ts
+
+
+node_modules配下にあるファイルを探索して実行してくれる（path指定なし）
+tscを実行している
+npx tsc ./src/install-typescript.ts
+
+.jsファイルの実行（node.js上でinstall-typescript.jsを実行）
+node ./src/install-typescript.js
+
+ts-nodeコマンド（ts-nodeのインストール必要）
+.tsをコンパイルした上で実行までしてくれる
+npx ts-node src/install-typescript.ts
+
+ts-node-devコマンド（ts-node-devのインストール必要）
+省略可能：tsnd --respawn --transpile-only server.ts 
+ts-node-dev --respawn --transpile-only server.ts
+--respawn・・・その都度検知して毎回自動実行（コンパイル）モードに入る
+--transpile-only・・・コンパイルのみ（実行はされない）
+
+package.jsonにてscript指定しているとnpx経由で実行できない
+runで実行する（devというエイリアスを作った場合）
+npm run dev src/install-typescript.ts   
+
+自動でコードフォーマットしてくれるextension
+Prettier Formatter for Visual Studio Code
+
+tsconfig.jsonの作成
+npx tsc --init
+
+そのディレクトリにあるファイルをvscodeで開く
+code .
+
+vscodeの方の設定差分
+.vscode/
+
+letは変数（上書きできる）
+
+インストール（ts-nodeの8.5.4をインストール）
+pm install --save-dev ts-node@8.5.4
