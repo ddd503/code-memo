@@ -1,4 +1,28 @@
+// object型はとりあえずモデルクラスだという宣言、propatyに型指定ができない
+
+例外が発生するメソッドの書き方（戻り値の型がneverだが値は返ってこない）
+function error(message: string): never {
+  throw new Error(message);
+}
+
+
+
 定数定義
+
+引数ありのメソッド
+function returnNothing(): number {
+  console.log("I don't return anything");
+  return 1;
+}
+
+マッピングモデルを作る
+interface Article {
+    id: number;
+    title: string;
+    description: string;
+  }
+
+
 const anExampleVariable: string = "こんにちは、世界!"
 
 package.jsonの作成（npmパッケージの管理ファイル）
@@ -59,4 +83,16 @@ vscodeの方の設定差分
 letは変数（上書きできる）
 
 インストール（ts-nodeの8.5.4をインストール）
-pm install --save-dev ts-node@8.5.4
+npm install --save-dev ts-node@8.5.4
+
+exportつきで新規ファイル作成（exportはprivateモジュールとしてファイルを扱う）
+echo 'export {};' > src/number-string.ts
+
+数値型の配列
+let numbers: number[] = [1, 2, 3];
+
+ライブラリ、モジュールの情報確認
+nom info ライブラリ名
+
+ライブラリのimport
+import 名称 from '名称'

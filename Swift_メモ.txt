@@ -1,7 +1,10 @@
 Swift コードメモ
+iOS13なら&&canImport(SwiftUI)
+applyメソッドは、外から変更できるメソッドの命名
 
 for文の並列処理版
 DispatchQueue. concurrentPerform
+
 CollectionViewのセルCellのFrameを取得
 let theAttributes = collectionView.layoutAttributesForItem(at: indexPath)
 let cellFrameInSuperview = collectionView.convert(theAttributes.frame, to: collectionView.superview)

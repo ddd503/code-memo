@@ -1,3 +1,36 @@
+グラデーションの色作る
+LinearGradientを使う
+static let gradientStart = Color(red: 239.0 / 255, green: 120.0 / 255, blue: 221.0 / 255)
+    static let gradientEnd = Color(red: 239.0 / 255, green: 172.0 / 255, blue: 120.0 / 255)
+
+~~.fill(LinearGradient(
+                            gradient: .init(colors: [Self.gradientStart, Self.gradientEnd]),
+                            startPoint: .init(x: 0.5, y: 0),
+                            endPoint: .init(x: 0.5, y: 0.6)
+                        ))
+レイヤーのアスペクト比をviewに合わせる
+.aspectRatio(1, contentMode: .fit)
+
+
+Viewに線を引く
+Pathを使う
+HexagonParameters.pointsに定義した線座標をつなげて、多角形を描く（中身は黒色）
+move、addLineで表示、addQuadCurveで角丸
+Path { path in
+            var width: CGFloat = 100.0
+            let height = width
+            path.move(to: CGPoint(x: width * 0.95, y: height * 0.20))
+            HexagonParameters.points.forEach {
+                path.addLine(
+                    to: .init(
+                        x: width * $0.useWidth.0 * $0.xFactors.0,
+                        y: height * $0.useHeight.0 * $0.yFactors.0
+                    )
+                )
+            }
+        }
+        .fill(Color.black)
+
 @EnvironmentObjectをつけるとViewクラス全体で共通のプロパティとなります。（View内部のshardなpropatyになる）
 @EnvironmentObject var userData: UserData
 
@@ -35,6 +68,17 @@ static var previews: some View {
         }
     }
 
+パターン2
+
+static var previews: some View {
+        Group {
+            ForEach(["iPhone SE", "iPhone Xs Max"], id: \.self) { deviceName in
+                Wrapper()
+                    .previewDevice(PreviewDevice(rawValue: deviceName))
+                    .previewDisplayName(deviceName)
+            }
+        }
+    }
 
 for文で回してpreview端末増やす
 ForEach(["iPhone SE", "iPhone XS Max"], id: \.self) { deviceName in
