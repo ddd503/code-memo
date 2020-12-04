@@ -1,4 +1,10 @@
 Swift コードメモ
+
+delegateをweakで持つ場合、にprotocolをAnyObject型にする必要がある理由
+weakは循環参照を避けるために「弱参照にします」というキーワードであって、参照型の変数じゃないと意味がないため、protocolを参照型(AnyObject)だけに適用できるような宣言をしないとダメですよ、という訳です。
+参照型でないものをweakに指定できない
+
+
 iOS13なら&&canImport(SwiftUI)
 applyメソッドは、外から変更できるメソッドの命名
 

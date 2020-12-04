@@ -1,0 +1,59 @@
+Publisherの種類
+
+公式のPublisher
+
+・Future
+非同期用、Resultをクロージャで返せる
+
+・Just
+同期的に値を返すときに使う、Futureと違ってErrorを返せない、失敗ケースがない
+エラーハンドル時は固定文言を代わりに返したりする
+
+PassthroughSubject・・・保持しないPublisher、.sendしたときに流れる
+CurrentValueSubject・・・保持するPublisher、.valueでsendした値を参照できる
+
+マッピングの例
+// 1
+let url = URL(string: "https://api.github.com/users/V8tr/repos")!
+
+// 2
+let token = URLSession.shared.dataTaskPublisher(for: url)
+    .map { $0.data } // 3
+    .decode(type: [Repository].self, decoder: JSONDecoder()) // 4
+    .sink(receiveCompletion: { completion in // 5
+        print(completion)
+    }, receiveValue: { repositories in
+        print("V8tr has \(repositories.count) repositories")
+    })
+
+
+多分viewとのbind 
+assign(to:on:) 
+
+例
+let sub = NotificationCenter.default
+    .publisher(for: NSControl.textDidChangeNotification, object: filterField)
+    .map( { ($0.object as! NSTextField).stringValue } )
+    .assign(to: \MyViewModel.filterString, on: myViewModel)
+
+
+例2
+let sub = NotificationCenter.default
+    .publisher(for: NSControl.textDidChangeNotification, object: filterField) // テキストフィールドの変更を監視
+    .map( { ($0.object as! NSTextField).stringValue } ) // textfieldからtextだけ抜き取る
+    .filter( { $0.unicodeScalars.allSatisfy({CharacterSet.alphanumerics.contains($0)}) } ) // テキストにフィルターかける
+    .debounce(for: .milliseconds(500), scheduler: RunLoop.main) // 検知のインターバルを決めれる（遅延実行設定）ここでは0.5秒毎にメインスレッドで検知
+    .receive(on: RunLoop.main) // 値を受けるときはメインスレッドでasnycで受ける
+    .assign(to:\MyViewModel.filterString, on: myViewModel) // textとviewとバインド
+
+上で作った購読をキャンセルするとき
+sub.cancel()
+
+ // ニュース記事一覧の取得
+        let viewDidLoad = input.viewDidLoad
+            .flatMap { [unowned self] _ in self.newsUseCase.readNewsList() }
+            .map { (articles) -> ViewState in
+                articles.isEmpty ? .noResults : .success(articles)
+            }
+            .replaceError(with: .failure)
+            .eraseToAnyPublisher()
