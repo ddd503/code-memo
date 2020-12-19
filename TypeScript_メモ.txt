@@ -1,3 +1,15 @@
+struct的な
+type ObjectType = {
+  name: string;
+  age: number;
+}
+
+protcol的な
+interface ObjectInterface {
+  name: string;
+  age: number;
+}
+
 // 定数を宣言したエイリアスを使って型定義
 const fooMojiretsu: Mojiretsu = 'Hello';
 
