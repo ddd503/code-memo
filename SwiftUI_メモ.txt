@@ -1,3 +1,11 @@
+これの挙動がわからん
+.font(.caption)
+
+
+プレビューをフリーサイズで表示できる
+.previewLayout(.fixed(width: 400, height: 60))
+
+
 グラデーションの色作る
 LinearGradientを使う
 static let gradientStart = Color(red: 239.0 / 255, green: 120.0 / 255, blue: 221.0 / 255)
