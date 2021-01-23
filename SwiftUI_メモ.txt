@@ -1,3 +1,63 @@
+@State
+バインディング用のプロパティラッパー
+
+テーブルViewのセクション作る
+List {
+            Section(header: Text("Meeting Info")) {
+            }
+        }
+
+TextField（TitleはPlacefolder、scrumData.titleはバインディングする値）
+TextField("Title", text: $scrumData.title)
+
+これだけでカラーピッカー出せる
+ColorPicker("Color", selection: $scrumData.color)
+
+ForEachでテーブル表示した値への削除アクションの定義
+ForEach(scrumData.attendees, id: \.self) { attendee in
+                    Text(attendee)
+                }
+                .onDelete { indices in
+                    scrumData.attendees.remove(atOffsets: indices)
+                }
+
+プラスボタン
+Button(action: {}) {
+                        Image(systemName: "plus.circle.fill")
+                    }
+
+このBOOL値が変更になったら、画面遷移(full)で発動、どのViewを返すかはクロージャないで（Viewに対するオプション）
+.fullScreenCover(isPresented: $isPresented) {
+            EditView()
+        }
+
+NavigationView で囲むとナビバー特定を与えられる（titleとか設定できる、遷移はshowには変わらない）
+
+EditViewにナビバーとbarbuttonitemつけている
+NavigationView {
+                EditView()
+                    .navigationTitle(scrum.title)
+                    .navigationBarItems(leading: Button("Cancel") {
+                        isPresented = false
+                    }, trailing: Button("Done") {
+                        isPresented = false
+                    })
+            }
+
+スライダー（5~30を5刻みで選択可能）
+Slider(value: $scrumData.lengthInMinutes, in: 5...30, step: 5.0) {
+                        Text("Length")
+                    }
+
+ボタンにかかるオプション（非活性、この場合はstringが空、指定したBOOL値でバインドされる、@Stateはいらないっっぽい）
+.disabled(newAttendee.isEmpty)
+
+
+アニメーション付きテーブル追加
+withAnimation {
+                            scrumData.attendees.append(newAttendee)
+                        }
+
 これの挙動がわからん
 .font(.caption)
 
