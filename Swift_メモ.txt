@@ -2124,8 +2124,9 @@ reloadView.frame.size.height = isHidden ? 0 : 50
     }
 
 
+テスト側のローカルJSONを取得する
+/// TestProjectに置いてあるlacalのjsonファイルのpathを取得（json自体のmembershipで本環境の方を許可することでも取得できるけど、Bundleを以下のようにTestモジュールだけ指定する方が安全かも）
 
-/// TestProjectに置いてあるlacalのjsonファイルのpathを取得（json自体のmembershipで本環境の方を許可する）
     ///
     /// - Parameter fileName: ファイル名
     /// - Returns: jsonファイルのpath(失敗の場合はnil)
