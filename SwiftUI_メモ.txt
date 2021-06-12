@@ -1,5 +1,17 @@
+ViewDidLoad -> onAppear
+
+ボタン太字
+.fontWeight(.bold)
+
+@StateObject
+combineでバイディンングするクラスにつける(viewmodelと繋ぐ)
+
+@Published
+監視するプロパティにつける（UIとバインディングしている証拠なのでメインスレッドで触ること）
+
 @State
 バインディング用のプロパティラッパー
+これつけていれば、変更が会った時にbodyを再発火できる
 
 テーブルViewのセクション作る
 List {
