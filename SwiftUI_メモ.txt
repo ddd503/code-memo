@@ -1,3 +1,37 @@
+処理前に通る
+.handleEvents(receiveSubscription: { [weak self] _ in
+                self?.repos = .loading
+            })
+以降の処理をスレッド切り替え
+.receive(on: DispatchQueue.main)
+
+protocolはObservableObjecttoshite@StateObjectで監視対象にできないらしい
+
+Publisherと普通の関数を繋げる場合はmap、PublisherとPublisherを繋げる場合はflatMapを使います。
+https://zenn.dev/ryotapoi/articles/7dba6606f8e80b8f65d8
+
+
+遅延実行
+func ddd(array: [PublicRepository]) -> AnyPublisher<[Repo], Error> {
+        return Deferred { //Deferred 宣言時には走らない、sbscribe時に初めて走る
+            Future<[Repo], Error> { (promise) in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    let dd = array.map {
+                        Repo(id: $0.id,
+                             name: $0.name,
+                             owner: User(name: $0.owner.login),
+                             description: $0.description ?? "",
+                             stargazersCount: $0.stargazersCount)
+                    }
+                    promise(.success(dd))}
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+
+
+
+
 ViewDidLoad -> onAppear
 
 ボタン太字
