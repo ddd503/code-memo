@@ -1,3 +1,55 @@
+toolBarの使い方
+NavigationView {
+            Group {
+            List {
+                ForEach(items) { item in
+                    Text("Item at \(item.timestamp!, formatter: itemFormatter)")
+                }
+                .onDelete(perform: deleteItems)
+            }
+
+            }
+            .navigationTitle("Repositories")
+            .toolbar(content: {
+                ToolbarItem(placement: .navigationBarTrailing){
+                    Button(action: {}) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                }
+                ToolbarItem(placement: .navigationBarLeading){
+                    Button(action: {}) {
+                        Image(systemName: "cart")
+                    }
+                }
+                // placementで色々な表示方法を選べる
+                ToolbarItem(placement: .navigation){
+                    Button(action: {}) {
+                        Image(systemName: "yensign.square")
+                    }
+                }
+
+                // カスタムで作る場合(bottomBarでは自由度が少ないからカスタムでやっても良い)
+                ToolbarItemGroup(placement: .bottomBar) {
+                    Button(action: {}) {
+                        Image(systemName: "arrow.uturn.backward")
+                    }
+                    Spacer()
+                    Text("操作")
+                    Spacer()
+                    Button(action: {}) {
+                        Image(systemName: "arrow.uturn.forward")
+                    }
+                }
+
+            })
+        }
+
+
+
+AnyPublishの作り方
+Just・・・同期的に値を返せる、エラーは発行できない
+Future・・・非同期的に値を返せる、エラーも発行できる
+
 処理前に通る
 .handleEvents(receiveSubscription: { [weak self] _ in
                 self?.repos = .loading
@@ -147,6 +199,9 @@ Path { path in
 
 @EnvironmentObjectをつけるとViewクラス全体で共通のプロパティとなります。（View内部のshardなpropatyになる）
 @EnvironmentObject var userData: UserData
+
+@Environmentは初期値の設定を初期化時に行えるvar変数、letではなくvarで宣言できるので変数として扱える
+
 
 @Stateを頭につけると変数が変更可能になる mutableになる、基本はSwiftUIのViewは変更不可能
 @State var showFavoritesOnly = false
