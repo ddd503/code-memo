@@ -1,3 +1,99 @@
+
+オペレーター
+
+.forEach
+戻り値なし
+weakselfなしで使える
+
+.flatMap
+返す値をPublisherを定義する、すでに流れてきている場合は、追加でpublisher(購読)したいことがなければmapで良い
+
+.map
+返す値のOutputの部分だけ変えられる（TodoInfo部分）AnyPublisher<TodoInfo, Error>
+
+.mapError
+エラーの種類をすげ替えるよう
+
+
+.replaceError(with: nil)
+エラーの場合に適当な値を流す（エラー判定は流れる）上ではエラーの場合はnilを後続へ流している
+.catch
+エラーの場合に適当な値を流す（エラー判定は流れない）
+
+.subscribe(on: DispatchQueue.global())
+これより前の処理に対してかかるスレッド指定
+
+.receive(on: DispatchQueue.global())
+これより後ろの処理に対してかかるスレッド指定
+
+.assign
+プロパティとバインドする（エラーが流れないように事前にreplaceErrorなどで値を確定させておく）
+エラーが流れてこないpublisherに限り、バインディング対象(購読対象)を決定できる（sinkのエラーハンドルない版）
+Neverだったり、.catchでエラーを流さない作りになっているもの
+pub.assign(to: \.message, on: obj)
+objクラスが持つmessageとpubに流れるstringをバインド
+
+Publisherの種類
+
+公式のPublisher
+
+・Future
+非同期用、Resultをクロージャで返せる
+
+・Just
+同期的に値を返すときに使う、Futureと違ってErrorを返せない、失敗ケースがない
+エラーハンドル時は固定文言を代わりに返したりする
+
+PassthroughSubject・・・保持しないPublisher、.sendしたときに流れる
+CurrentValueSubject・・・保持するPublisher、.valueでsendした値を参照できる
+
+マッピングの例
+// 1
+let url = URL(string: "https://api.github.com/users/V8tr/repos")!
+
+// 2
+let token = URLSession.shared.dataTaskPublisher(for: url)
+    .map { $0.data } // 3
+    .decode(type: [Repository].self, decoder: JSONDecoder()) // 4
+    .sink(receiveCompletion: { completion in // 5
+        print(completion)
+    }, receiveValue: { repositories in
+        print("V8tr has \(repositories.count) repositories")
+    })
+
+
+多分viewとのbind 
+assign(to:on:) 
+
+例
+let sub = NotificationCenter.default
+    .publisher(for: NSControl.textDidChangeNotification, object: filterField)
+    .map( { ($0.object as! NSTextField).stringValue } )
+    .assign(to: \MyViewModel.filterString, on: myViewModel)
+
+
+例2
+let sub = NotificationCenter.default
+    .publisher(for: NSControl.textDidChangeNotification, object: filterField) // テキストフィールドの変更を監視
+    .map( { ($0.object as! NSTextField).stringValue } ) // textfieldからtextだけ抜き取る
+    .filter( { $0.unicodeScalars.allSatisfy({CharacterSet.alphanumerics.contains($0)}) } ) // テキストにフィルターかける
+    .debounce(for: .milliseconds(500), scheduler: RunLoop.main) // 検知のインターバルを決めれる（遅延実行設定）ここでは0.5秒毎にメインスレッドで検知
+    .receive(on: RunLoop.main) // 値を受けるときはメインスレッドでasnycで受ける
+    .assign(to:\MyViewModel.filterString, on: myViewModel) // textとviewとバインド
+
+上で作った購読をキャンセルするとき
+sub.cancel()
+
+ // ニュース記事一覧の取得
+        let viewDidLoad = input.viewDidLoad
+            .flatMap { [unowned self] _ in self.newsUseCase.readNewsList() }
+            .map { (articles) -> ViewState in
+                articles.isEmpty ? .noResults : .success(articles)
+            }
+            .replaceError(with: .failure)
+            .eraseToAnyPublisher()
+
+
 toolBarの使い方
 NavigationView {
             Group {
@@ -88,6 +184,30 @@ ViewDidLoad -> onAppear
 
 ボタン太字
 .fontWeight(.bold)
+
+@State
+SwiftUIでのViewはstructであるため保持するプロパティを変更することができません。
+そこで、@Stateの出番です。
+@Stateを付与したプロパティはメモリ管理がSwiftUIフレームワークに委譲され、変更が可能となります。
+プロパティは値の変更が監視され、変更時に宣言されたViewのbodyが再描画されます。
+
+ただし、そのプロパティへのアクセスは宣言されたView内でのみとなります。
+また、値が変更されるようなアクセスでは’$’を付与する必要があります。
+
+@ObservedObject
+これは@Stateとよく似たものになります。
+@StateでViewの状態管理は可能ですが、複数の値を状態管理するとなるとプロパティの宣言が多くなり、管理が大変になります。
+そこで、@ObservedObjectを利用すると、そういったプロパティをひとまとめにしたオブジェクトとして管理することができます。
+付与するオブジェクトはObservableObjectプロトコルに準拠する必要があります。
+また、監視するプロパティは@Publishedを付与します。
+
+viewmodelに@ObservedObjectをつけて、viewmodel側のプロパティに@publishedをつける
+
+@EnvironmentObject
+こちらは先ほどの@Stateや@ObservedObjectとは少し異なります。
+というのも、@EnvironmentObjectを付与したプロパティは複数のViewで共通のインスタンスを参照します。
+つまり、アプリ全体で共通のプロパティとなります。
+
 
 @StateObject
 combineでバイディンングするクラスにつける(viewmodelと繋ぐ)
@@ -249,9 +369,16 @@ static var previews: some View {
         }
     }
 
+
 for文で回してpreview端末増やす
 ForEach(["iPhone SE", "iPhone XS Max"], id: \.self) { deviceName in
                 LandmarkList()
                     .previewDevice(PreviewDevice(rawValue: deviceName))
                     .previewDisplayName(deviceName)
             }
+
+@State var ddd: String
+
+    var body: some View {
+        TextField("ヒント、プレイスフォルダー文", text: $ddd)
+    }
