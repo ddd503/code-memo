@@ -2,6 +2,8 @@ Swift コードメモ
 
 AnyPublishの作り方
 Just・・・同期的に値を返せる、エラーは発行できない
+setFailureType(to: Error.self)でできるかも
+
 Future・・・非同期的に値を返せる、エラーも発行できる
 
 マルチスレッドでcoredataを触る
