@@ -1,0 +1,64 @@
+TCAの場合
+Action: Viewから発行されるイベント通知
+Store: Dispatchを通して、Actionを発行する
+View: 外部からのInputをStoreに伝える
+State: Viewの状態
+Reducer: 唯一Stateを変更できる
+MiddleWare: StoreからReducerにActionが渡る前に挟まれる通過処理（オフラインチェックやロギングなど）
+
+変わった部分
+・Storeについて、よりSwiftUIの扱いに特化したViewStoreができた
+・MiddleWare→ Effectになった
+・ReducerとEffectの間にEnvironmentなるものを挟むようになった
+Environment: API clientsやanalytics clientsを指定するところ
+
+View
+・ViewContoroller
+
+Store
+・Dispath
+・MiddleWare
+・State
+
+Reducer
+
+処理の流れ
+1. ViewがInputを受ける
+2. ViewがStoreが持っているDispatchを使ってそのInputを表すActionを生成する
+3. ViewがStoreにActionを渡して、StoreがそのActionをReducerに渡す（必要ならMiddleWareを通した上で渡す）
+4. Reducerは受け取ったActionに応じて、適したStateを発行してStoreに返す
+5. StoreはReducerから受け取ったStateを自身が保持するStateに反映する
+6. Stateを購読していたViewは反映に応じてOutputを実行する 
+
+
+
+
+
+
+
+Reduxの場合
+
+Action: Viewから発行されるイベント通知
+Store: Dispatchを通して、Actionを発行する
+View: 外部からのInputをStoreに伝える
+State: Viewの状態
+Reducer: 唯一Stateを変更できる
+MiddleWare: StoreからReducerにActionが渡る前に挟まれる通過処理（オフラインチェックやロギングなど）
+
+View
+・ViewContoroller
+
+Store
+・Dispath
+・MiddleWare
+・State
+
+Reducer
+
+処理の流れ
+1. ViewがInputを受ける
+2. ViewがStoreが持っているDispatchを使ってそのInputを表すActionを生成する
+3. ViewがStoreにActionを渡して、StoreがそのActionをReducerに渡す（必要ならMiddleWareを通した上で渡す）
+4. Reducerは受け取ったActionに応じて、適したStateを発行してStoreに返す
+5. StoreはReducerから受け取ったStateを自身が保持するStateに反映する
+6. Stateを購読していたViewは反映に応じてOutputを実行する 
