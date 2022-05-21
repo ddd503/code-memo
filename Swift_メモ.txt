@@ -3171,6 +3171,12 @@ static func nib() -> UINib {
     }
     
 
+// ローカルからmovファイルのURLを取得
+Bundle.main.url(forResource: "ファイル名", withExtension: "mov")
+
+NSURLConnection finished with error - code -1002
+URLの取得方法が間違っている可能性あり上参照
+
 // ローカルのJSONをストリングで出力
 ※ pathの作成でnilになる場合は、「let testBundle = Bundle(for: type(of: self))」を試す
  guard let path = Bundle.main.path(forResource: "btnu_custom_sample2", ofType: "json") else {

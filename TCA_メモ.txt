@@ -1,6 +1,8 @@
 TCAの場合
 Action: Viewから発行されるイベント通知
+ViewStore: UIからのアクションをStore以降に送れる
 Store: Dispatchを通して、Actionを発行する
+WithViewStore: Stateを管理する、Viewの状態を管理する、Viewが必要なViewStoreを呼ぶ
 View: 外部からのInputをStoreに伝える
 State: Viewの状態
 Reducer: 唯一Stateを変更できる
@@ -8,6 +10,7 @@ MiddleWare: StoreからReducerにActionが渡る前に挟まれる通過処理�
 
 変わった部分
 ・Storeについて、よりSwiftUIの扱いに特化したViewStoreができた
+・Stateの管理をViewStoreからWithViewStoreに切り出した
 ・MiddleWare→ Effectになった
 ・ReducerとEffectの間にEnvironmentなるものを挟むようになった
 Environment: API clientsやanalytics clientsを指定するところ
