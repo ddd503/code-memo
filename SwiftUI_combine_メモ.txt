@@ -1,3 +1,37 @@
+@SceneStorage
+画面遷移を挟んだ場合でもインスタンスを解放せず保持するプロパティラッパー
+次の画面と共同で使う値など
+
+@StateObject
+ObservableObjectをViewで監視する際につける
+
+@State
+通常の値型の変数を監視する場合につける
+
+.sheet(isPresented: $Bool) {}
+モーダルを画面上に出す
+モーダル閉じる判定ようにBoolを渡す必要がある
+{} の内部でViewを返せばそのViewがモーダルに乗る
+
+.task
+画面が表示された時に実行される。
+onAppear と同じようですが、画面が非表示となった時に task で実行されている処理が自動的にキャンセルされる
+、画面が再表示されたときに処理結果が重複することを避けることができます
+
+NavigationViewがないとNavigationLinkは動かない
+
+
+テキストの行数制限reservesSpaceは使わない行のスペースが可変が固定確保かを表す
+lineLimit(2, reservesSpace: false)
+
+なぜVStackでpinnedViewsは使えないの？
+
+
+
+
+
+
+
 
 オペレーター
 
