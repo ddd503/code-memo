@@ -1,3 +1,18 @@
+
+@Published
+@PublishedはObservableObjectプロトコルに準拠したクラス内のプロパティを監視し、変化があった際にViewに対して通知を行う役目があります。
+
+@StateObject
+シングルトンにしたいとき、Viewに対してインスタンスを1つだけ生成して管理する、同じViewを再生成してもインスタンスは共有される
+
+＠ObservedObject
+生成したインスタンス毎にデータを監視対象とする
+
+@EnvironmentObject
+EnvironmentObjectは階層が上位のViewからenvironmentObject()で渡されたインスタンスにアクセスできる
+とりあえず、データソース系はこれで渡すと良い
+EnvironmentObjectとして宣言して、外からStateObjectを渡すイメージ
+
 @SceneStorage
 画面遷移を挟んだ場合でもインスタンスを解放せず保持するプロパティラッパー
 次の画面と共同で使う値など
@@ -6,7 +21,7 @@
 ObservableObjectをViewで監視する際につける
 
 @State
-通常の値型の変数を監視する場合につける
+Viewで通常の値型の変数を監視する場合につける
 
 .sheet(isPresented: $Bool) {}
 モーダルを画面上に出す
