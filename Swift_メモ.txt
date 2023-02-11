@@ -2,6 +2,17 @@ Swift コードメモ
 
 viewDidLoad等の同期関数からasync/awaitの関数を呼び出せないので、Task {}を利用して呼び出します。上記の例では、Presenterが保持する同期関数の中でTaskを利用し、async/awaitの関数を呼び出して結果を返します。Presenterを保持するViewControllerは変わらずそのPresenterの同期関数を呼び出すだけなので特に改修することはありません。Presenterが保持するasync/await対応の関数をViewController側で呼び出す場合は、ViewController側にTaskを書いて、その関数を呼び出す形になります。また、Presenter自体は同期的に扱う必要があり、@MainActorを指定する必要がありますが、詳細は省きます。
 
+memolistアプリ
+保存はinmemorryでよい
+collection（LazyVGrid）で作る
+memolistはViewで持つ
+
+photoviewer
+
+http://localhost:3000/v1/users
+
+
+0570025071
 actorで宣言したら、他の導線からアクセスされてもスレッドセーフ、直列に実行される
 変数は並列でのアクセスを気にしなくて良い
 ただ、単一で呼び出すときも他の箇所からの呼び出しがあった場合は待つ必要があるので、awaitを常に呼び出し側はつける必要がある
