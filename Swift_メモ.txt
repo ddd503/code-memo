@@ -1,5 +1,16 @@
 Swift コードメモ
 
+Taskについて
+基本はawaitするメソッドはViewで呼び出す→その時にTaskを使う
+（注意）Taskのクロージャ内でselfやpresenterの参照を強参照で持ちがち
+・クロージャ内の開放（メモリーリーク対策）
+→ selfだけでなくpresenterなどもweakで持つ
+・クロージャ自体のキャンセル（解放されても最後まで実行される）
+→ 画面破棄のタイミングで変数で持っておいたTaskでcancel処理を呼ぶ必要がある
+の２つが必要
+
+
+
 viewDidLoad等の同期関数からasync/awaitの関数を呼び出せないので、Task {}を利用して呼び出します。上記の例では、Presenterが保持する同期関数の中でTaskを利用し、async/awaitの関数を呼び出して結果を返します。Presenterを保持するViewControllerは変わらずそのPresenterの同期関数を呼び出すだけなので特に改修することはありません。Presenterが保持するasync/await対応の関数をViewController側で呼び出す場合は、ViewController側にTaskを書いて、その関数を呼び出す形になります。また、Presenter自体は同期的に扱う必要があり、@MainActorを指定する必要がありますが、詳細は省きます。
 
 memolistアプリ
